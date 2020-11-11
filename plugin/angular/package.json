@@ -1,11 +1,11 @@
 {
   "name": "@nativescript-community/ui-persistent-bottomsheet-angular",
-  "main": "bundles/nativescript-community-ui-drawer-angular.umd.js",
-  "module": "fesm2015/nativescript-community-ui-drawer-angular.js",
-  "es2015": "fesm2015/nativescript-community-ui-drawer-angular.js",
-  "esm2015": "esm2015/nativescript-community-ui-drawer-angular.js",
-  "fesm2015": "fesm2015/nativescript-community-ui-drawer-angular.js",
-  "typings": "nativescript-community-ui-drawer-angular.d.ts",
+  "main": "bundles/nativescript-community-ui-persistent-bottomsheet-angular.umd.js",
+  "module": "fesm2015/nativescript-community-ui-persistent-bottomsheet-angular.js",
+  "es2015": "fesm2015/nativescript-community-ui-persistent-bottomsheet-angular.js",
+  "esm2015": "esm2015/nativescript-community-ui-persistent-bottomsheet-angular.js",
+  "fesm2015": "fesm2015/nativescript-community-ui-persistent-bottomsheet-angular.js",
+  "typings": "nativescript-community-ui-persistent-bottomsheet-angular.d.ts",
   "sideEffects": false,
   "dependencies": {
     "tslib": "^2.0.0"
