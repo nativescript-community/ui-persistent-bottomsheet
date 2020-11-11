@@ -121,16 +121,10 @@ export class PersistentBottomSheet extends GridLayout {
         // }
     }
     shouldStartGesture(data) {
-        // if (this.scrollView) {
         const safeAreatop = Utils.layout.toDeviceIndependentPixels(this.getSafeAreaInsets().top);
-        // if (global.isIOS) {
-        //     // why do we get need :s
-        //     safeAreatop -= 10;
-        // }
-        // const y = data.y - safeAreatop;
         const y = data.y - safeAreatop;
         // console.log('shouldStartGesture ', safeAreatop, data, y, this.viewHeight - (this.translationMaxOffset - this.translationY), this.translationY, this.translationMaxOffset, this.viewHeight);
-        if (y < this.viewHeight - (this.translationMaxOffset - this.translationY)) {
+        if (y < this.viewHeight - (this.bottomViewHeight - this.translationY)) {
             return false;
         }
         if (this._scrollView) {
@@ -282,7 +276,7 @@ export class PersistentBottomSheet extends GridLayout {
             newValue.iosOverflowSafeAreaEnabled = false;
             newValue.verticalAlignment = 'bottom';
             newValue.on('layoutChanged', this.onBottomLayoutChange, this);
-        let index;
+            let index;
             if (!newValue.parent) {
                 index = this.getChildrenCount();
                 this.addChild(newValue);
@@ -299,8 +293,11 @@ export class PersistentBottomSheet extends GridLayout {
     }
 
     computeTranslationData(height) {
+        const max = this.translationMaxOffset;
+        const diff = height - max;
         const value = this._translationY;
-        const progress = 1 - value / height;
+        const progress = 1 - (this._translationY - diff) / max;
+        // console.log('computeTranslationData', value, max, diff, progress);
         if (this.translationFunction) {
             return this.translationFunction(height, value, progress);
         }
@@ -418,7 +415,7 @@ export class PersistentBottomSheet extends GridLayout {
             // const viewY = this.translationY - height;
             const y = touchY - (this.lastTouchY || touchY);
             const trY = this.constrainY(this.translationY + y);
-            const height = this.translationMaxOffset;
+            const height = this.bottomViewHeight;
             // console.log('constraining on touch event', touchY, this.lastTouchY, y, trY);
             this.translationY = trY;
             const trData = this.computeTranslationData(height);
@@ -456,22 +453,24 @@ export class PersistentBottomSheet extends GridLayout {
     }
 
     computeAndAnimateEndGestureAnimation(totalDelta: number) {
-        const viewHeight = this.translationMaxOffset;
+        const viewHeight = this.bottomViewHeight;
         const steps = this.steps;
         let stepIndex = 0;
         let destSnapPoint = viewHeight - steps[stepIndex];
+        let distance = Math.abs(destSnapPoint - totalDelta);
         for (let i = 0; i < steps.length; i++) {
             const snapPoint = viewHeight - steps[i];
             const distFromSnap = Math.abs(snapPoint - totalDelta);
             if (distFromSnap <= Math.abs(destSnapPoint - totalDelta)) {
                 destSnapPoint = snapPoint;
                 stepIndex = i;
+                distance = distFromSnap;
             }
         }
         // stepIndexProperty.nativeValueChange
         // this.stepIndex = stepIndex;
         stepIndexProperty.nativeValueChange(this, stepIndex);
-        this.animateToPosition(viewHeight - destSnapPoint);
+        this.animateToPosition(viewHeight - destSnapPoint, Math.min(distance, OPEN_DURATION));
     }
     onGestureTouch(args: GestureTouchEventData) {
         const data = args.data;
@@ -485,8 +484,9 @@ export class PersistentBottomSheet extends GridLayout {
         }
         const y = deltaY - this.prevDeltaY;
         const trY = this.constrainY(this.translationY + y);
+        console.log(this.translationY, y, trY);
         this.translationY = trY;
-        const height = this.translationMaxOffset;
+        const height = this.bottomViewHeight;
         const trData = this.computeTranslationData(height);
         this.applyTrData(trData);
         this.prevDeltaY = deltaY;
@@ -505,7 +505,7 @@ export class PersistentBottomSheet extends GridLayout {
     }
 
     constrainY(y) {
-        return Math.max(Math.min(y, this.translationMaxOffset), 0);
+        return Math.max(Math.min(y, this.bottomViewHeight), this.bottomViewHeight - this.translationMaxOffset);
     }
 
     async animateToPosition(position, duration = OPEN_DURATION) {
