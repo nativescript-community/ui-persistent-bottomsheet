@@ -1,7 +1,7 @@
 {
     "name": "@nativescript-community/ui-persistent-bottomsheet",
     "version": "0.0.11",
-    "description": "NativeScript plugin that allows you to easily add a side drawer (side menu) to your projects.",
+    "description": "NativeScript plugin that allows you to easily add a persistent bottomsheet to your projects.",
     "main": "./index",
     "sideEffects": false,
     "typings": "./index.d.ts",
