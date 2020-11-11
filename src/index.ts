@@ -470,7 +470,7 @@ export class PersistentBottomSheet extends GridLayout {
         // stepIndexProperty.nativeValueChange
         // this.stepIndex = stepIndex;
         stepIndexProperty.nativeValueChange(this, stepIndex);
-        this.animateToPosition(viewHeight - destSnapPoint, Math.min(distance, OPEN_DURATION));
+        this.animateToPosition(viewHeight - destSnapPoint, Math.min(distance * 2, OPEN_DURATION));
     }
     onGestureTouch(args: GestureTouchEventData) {
         const data = args.data;
@@ -527,7 +527,7 @@ export class PersistentBottomSheet extends GridLayout {
                 if (data.target) {
                     return Object.assign(
                         {
-                            curve: AnimationCurve.easeInOut,
+                            curve: AnimationCurve.easeOut,
                             duration,
                         },
                         transformAnimationValues(trData[k])
@@ -536,7 +536,7 @@ export class PersistentBottomSheet extends GridLayout {
                     return Object.assign(
                         {
                             target: this[k],
-                            curve: AnimationCurve.easeInOut,
+                            curve: AnimationCurve.easeOut,
                             duration,
                         },
                         transformAnimationValues(trData[k])
