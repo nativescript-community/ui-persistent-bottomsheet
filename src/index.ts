@@ -116,9 +116,6 @@ export class PersistentBottomSheet extends GridLayout {
         gestureHandler.on(GestureHandlerStateEvent, this.onGestureState, this);
         gestureHandler.attachToView(this);
         this.panGestureHandler = gestureHandler as any;
-        // if (this.mainContent) {
-        //     this.initNativeGestureHandler(this.mainContent);
-        // }
     }
     shouldStartGesture(data) {
         const safeAreatop = Utils.layout.toDeviceIndependentPixels(this.getSafeAreaInsets().top);
@@ -377,7 +374,6 @@ export class PersistentBottomSheet extends GridLayout {
         } else {
             touchY = (event.ios.touches.anyObject() as UITouch).locationInView(null).y;
         }
-        // console.log('onToucht', event.action, this.lastTouchY, touchY);
         if (event.action === 'down') {
             // this.scrollViewTouched = true;
             // this.lastScrollY = this.scrollViewVerticalOffset;
@@ -411,18 +407,14 @@ export class PersistentBottomSheet extends GridLayout {
                     this.panGestureHandler.cancel();
                 }
             }
-            // const height = this.viewHeight;
-            // const viewY = this.translationY - height;
             const y = touchY - (this.lastTouchY || touchY);
             const trY = this.constrainY(this.translationY + y);
             const height = this.bottomViewHeight;
-            // console.log('constraining on touch event', touchY, this.lastTouchY, y, trY);
             this.translationY = trY;
             const trData = this.computeTranslationData(height);
             this.applyTrData(trData);
         }
         this.lastTouchY = touchY;
-        // console.log('setting lastTouchY', this.lastTouchY);
     }
     scrollViewAtTop: boolean = true;
     onScroll(event: ScrollEventData & { scrollOffset?: number }) {
@@ -484,7 +476,6 @@ export class PersistentBottomSheet extends GridLayout {
         }
         const y = deltaY - this.prevDeltaY;
         const trY = this.constrainY(this.translationY + y);
-        console.log(this.translationY, y, trY);
         this.translationY = trY;
         const height = this.bottomViewHeight;
         const trData = this.computeTranslationData(height);
