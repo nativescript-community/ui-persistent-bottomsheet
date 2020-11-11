@@ -4,7 +4,6 @@
     import { PersistentBottomSheet } from '@nativescript-community/ui-persistent-bottomsheet';
     import { HTTPTileDataSource } from '@nativescript-community/ui-carto/datasources/http';
     import { RasterTileLayer } from '@nativescript-community/ui-carto/layers/raster';
-    import { GridLayout } from '@nativescript/core';
     let bottomsheet: PersistentBottomSheet;
     let cartoMap: CartoMap;
     let stepIndex = 1;
@@ -50,20 +49,13 @@
         cartoMap.addLayer(rasterLayer);
         cartoMap.setFocusPos({ latitude: 45, longitude: 5 }, 0);
     }
-    $: console.log('stepIndex changed', stepIndex)
+    $: console.log('stepIndex changed', stepIndex);
 </script>
 
 <style>
     ActionBar {
         background-color: #b52e31;
         color: white;
-    }
-
-    .avatar {
-        background-color: #b52e31;
-        border-radius: 40;
-        height: 80;
-        vertical-align: middle;
     }
 
     Button {
@@ -74,32 +66,30 @@
 
 <page>
     <actionBar title="Svelte Demo" />
-    <gridlayout>
-        <bottomsheet bind:stepIndex bind:this={bottomsheet} steps={[56, 156, 456]} scrollViewId="scrollView" backdropColor="#88000000">
-            <cartomap row="1" zoom="8" on:mapReady={onMapReady} />
-            <gridlayout prop:bottomSheet backgroundColor="white" rows="56, 100, 300">
-                <stacklayout row="0" orientation="horizontal">
-                    <button text="My Profile" class="button" on:tap={()=> stepIndex = 0}/>
-                    <button text="Settings" class="button" />
-                    <button text="Rate Us" class="button" />
-                    <button text="Support" class="button" />
-                    <button text="Contact" class="button" />
-                </stacklayout>
-                <stacklayout row="1" orientation="horizontal">
-                    <button text="My Profile" class="button" />
-                    <button text="Settings" class="button" />
-                    <button text="Rate Us" class="button" />
-                    <button text="Support" class="button" />
-                    <button text="Contact" class="button" />
-                </stacklayout>
-                <collectionView {items} row="2" id="scrollView" colWidth="50%" rowHeight="100">
-                    <Template let:item>
-                        <gridlayout rows="*, auto" backgroundColor={item.color} class="item">
-                            <stacklayout row="1"><label row="1" text={item.name} class="title" /> <label row="1" text={item.color} class="subtitle" /></stacklayout>
-                        </gridlayout>
-                    </Template>
-                </collectionView>
-            </gridlayout>
-        </bottomsheet>
-    </gridlayout>
+    <bottomsheet bind:stepIndex bind:this={bottomsheet} steps={[56, 156, 456]} scrollViewId="scrollView" backdropColor="#88000000">
+        <cartomap row="1" zoom="8" on:mapReady={onMapReady} />
+        <gridlayout prop:bottomSheet backgroundColor="white" rows="56, 100, 300">
+            <stacklayout row="0" orientation="horizontal">
+                <button text="My Profile" class="button" on:tap={() => (stepIndex = 0)} />
+                <button text="Settings" class="button" />
+                <button text="Rate Us" class="button" />
+                <button text="Support" class="button" />
+                <button text="Contact" class="button" />
+            </stacklayout>
+            <stacklayout row="1" orientation="horizontal">
+                <button text="My Profile" class="button" />
+                <button text="Settings" class="button" />
+                <button text="Rate Us" class="button" />
+                <button text="Support" class="button" />
+                <button text="Contact" class="button" />
+            </stacklayout>
+            <collectionView {items} row="2" id="scrollView" colWidth="50%" rowHeight="100">
+                <Template let:item>
+                    <gridlayout rows="*, auto" backgroundColor={item.color} class="item">
+                        <stacklayout row="1"><label row="1" text={item.name} class="title" /> <label row="1" text={item.color} class="subtitle" /></stacklayout>
+                    </gridlayout>
+                </Template>
+            </collectionView>
+        </gridlayout>
+    </bottomsheet>
 </page>

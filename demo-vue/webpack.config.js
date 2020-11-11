@@ -13,7 +13,12 @@ const nsWebpack = require("@nativescript/webpack");
 const nativescriptTarget = require("@nativescript/webpack/nativescript-target");
 const { NativeScriptWorkerPlugin } = require("nativescript-worker-loader/NativeScriptWorkerPlugin");
 const hashSalt = Date.now().toString();
-
+NsVueTemplateCompiler.registerElement('BottomSheet', () => require('@nativescript-community/ui-persistent-bottomsheet').PersistentBottomSheet, {
+    model: {
+        prop: 'stepIndex',
+        event: 'stepIndexChange',
+    },
+});
 module.exports = env => {
     // Add your custom Activities, Services and other android app components here.
     const appComponents = env.appComponents || [];

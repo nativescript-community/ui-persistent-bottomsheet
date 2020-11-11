@@ -28,6 +28,9 @@
     "category-general"
   ],
   "dependencies": {
+    "@nativescript-community/gesturehandler": "^0.1.27",
+    "@nativescript-community/ui-carto": "^1.4.8",
+    "@nativescript-community/ui-collectionview": "^4.0.9",
     "@nativescript-community/ui-persistent-bottomsheet": "../plugin",
     "@nativescript/core": "~7.0.13",
     "@nativescript/theme": "~3.0.0",

@@ -16,11 +16,7 @@
         "JavaScript",
         "Android",
         "iOS",
-        "SideDrawer",
-        "RadSideDrawer",
         "NativeScript UI",
-        "side drawer",
-        "side menu",
         "menu",
         "nativescript-community",
         "Angular",
@@ -38,6 +34,6 @@
     "homepage": "https://github.com/nativescript-community/ui-persistent-bottomsheet",
     "readmeFilename": "README.md",
     "dependencies": {
-        "@nativescript-community/gesturehandler": "^0.1.27"
+        "@nativescript-community/gesturehandler": "^0.1.28"
     }
 }
