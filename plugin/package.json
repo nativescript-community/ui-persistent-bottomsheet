@@ -1,0 +1,43 @@
+{
+    "name": "@nativescript-community/ui-persistent-bottomsheet",
+    "version": "0.0.11",
+    "description": "NativeScript plugin that allows you to easily add a side drawer (side menu) to your projects.",
+    "main": "./index",
+    "sideEffects": false,
+    "typings": "./index.d.ts",
+    "nativescript": {
+        "platforms": {
+            "android": "6.0.0",
+            "ios": "6.0.0"
+        }
+    },
+    "keywords": [
+        "NativeScript",
+        "JavaScript",
+        "Android",
+        "iOS",
+        "SideDrawer",
+        "RadSideDrawer",
+        "NativeScript UI",
+        "side drawer",
+        "side menu",
+        "menu",
+        "nativescript-community",
+        "Angular",
+        "Vue.js",
+        "Svelte"
+    ],
+    "author": {
+        "name": "Martin Guillon",
+        "email": "martin@akylas.fr"
+    },
+    "bugs": {
+        "url": "https://github.com/nativescript-community/ui-persistent-bottomsheet/issues"
+    },
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/nativescript-community/ui-persistent-bottomsheet",
+    "readmeFilename": "README.md",
+    "dependencies": {
+        "@nativescript-community/gesturehandler": "^0.1.27"
+    }
+}
