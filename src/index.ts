@@ -94,7 +94,7 @@ export class PersistentBottomSheet extends GridLayout {
     initGestures() {
         const manager = Manager.getInstance();
         const gestureHandler = manager.createGestureHandler(HandlerType.PAN, PAN_GESTURE_TAG, {
-            shouldStartGesture: (data) => this.shouldStartGesture(data),
+            shouldStartGesture: this.shouldStartGesture.bind(this),
             // waitFor: [NATIVE_GESTURE_TAG],
             // disallowInterruption: true,
             simultaneousHandlers: [NATIVE_GESTURE_TAG],
@@ -114,26 +114,19 @@ export class PersistentBottomSheet extends GridLayout {
     shouldStartGesture(data) {
         // if (this.scrollView) {
         const safeAreatop = Utils.layout.toDeviceIndependentPixels(this.getSafeAreaInsets().top);
+        // if (global.isIOS) {
+        //     // why do we get need :s
+        //     safeAreatop -= 10;
+        // }
+        // const y = data.y - safeAreatop;
         const y = data.y - safeAreatop;
-        // console.log(
-        //     'shouldStartGesture ',
-        //     data.positions,
-        //     data.absoluteX,
-        //     data.y,
-        //     y,
-        //     this.viewHeight - (this.translationMaxOffset - this.translationY),
-        //     this.viewHeight,
-        //     this.translationMaxOffset,
-        //     this.translationY
-        // );
+        // console.log('shouldStartGesture ', safeAreatop, data, y, this.viewHeight - (this.translationMaxOffset - this.translationY), this.translationY, this.translationMaxOffset, this.viewHeight);
         if (y < this.viewHeight - (this.translationMaxOffset - this.translationY)) {
-            // console.log('shouldStartGesture no go on background');
             return false;
         }
         if (this._scrollView) {
             const posY = this._scrollView && this.scrollView.getLocationRelativeTo(this).y - safeAreatop;
             if (y >= posY && y <= posY + this.scrollView.getMeasuredHeight()) {
-                // console.log('shouldStartGesture no go on scrollview', this.scrollView.isScrollEnabled);
                 return false;
             }
         }
@@ -165,6 +158,7 @@ export class PersistentBottomSheet extends GridLayout {
         return this._translationY;
     }
     set translationY(value: number) {
+        // console.log('set translationY', value)
         if (this._translationY !== -1) {
             this.isScrollEnabled = value === 0;
         }
@@ -174,7 +168,6 @@ export class PersistentBottomSheet extends GridLayout {
         return this.steps[this.steps.length - 1];
     }
     initNativeView() {
-        // this.iosOverflowSafeAreaEnabled = false;
         super.initNativeView();
         if (this.scrollView) {
             this.scrollView.on('scroll', this.onScroll, this);
@@ -246,10 +239,11 @@ export class PersistentBottomSheet extends GridLayout {
             this.scrollView.off('touch', this.onTouch, this);
         }
         this._scrollView = value;
+
         if (value) {
-            if (global.isIOS) {
-                (value.nativeViewProtected as UIScrollView).delaysContentTouches = true;
-            }
+            // if (global.isIOS) {
+            //     (value.nativeViewProtected as UIScrollView).delaysContentTouches = true;
+            // }
             value.on('scroll', this.onScroll, this);
             value.on('touch', this.onTouch, this);
         }
@@ -277,8 +271,13 @@ export class PersistentBottomSheet extends GridLayout {
         if (newValue) {
             newValue.iosOverflowSafeAreaEnabled = false;
             newValue.verticalAlignment = 'bottom';
-            const index = this.getChildrenCount();
-            this.addChild(newValue);
+            let index;
+            if (!newValue.parent) {
+                index = this.getChildrenCount();
+                this.addChild(newValue);
+            } else {
+                index = this.getChildIndex(newValue);
+            }
             if (!this.backDrop && this.backdropColor) {
                 this.addBackdropView(index);
             }
@@ -309,7 +308,6 @@ export class PersistentBottomSheet extends GridLayout {
         const height = Math.round(Utils.layout.toDeviceIndependentPixels(contentView.getMeasuredHeight()));
         this.viewHeight = height;
         if (this.translationY === -1) {
-            // console.log('onLayoutChange', this.stepIndex);
             const step = this.steps[this.stepIndex];
             const ty = this.translationMaxOffset - step;
             this.translationY = ty;
@@ -353,21 +351,25 @@ export class PersistentBottomSheet extends GridLayout {
         } else {
             touchY = (event.ios.touches.anyObject() as UITouch).locationInView(null).y;
         }
-        // console.log('onToucht', event.action, this.lastScrollY, touchY);
+        // console.log('onToucht', event.action, this.lastTouchY, touchY);
         if (event.action === 'down') {
-            this.scrollViewTouched = true;
-            this.lastScrollY = this.scrollViewVerticalOffset;
-            this.scrollViewAtTop = this.lastScrollY === 0;
-            if (this.scrollViewAtTop) {
-                this.panGestureHandler.cancel();
-            }
+            // this.scrollViewTouched = true;
+            // this.lastScrollY = this.scrollViewVerticalOffset;
+            // this.scrollViewAtTop = this.lastScrollY === 0;
+            // if (this.scrollViewAtTop) {
+            //     this.panGestureHandler.cancel();
+            // }
         } else if (event.action === 'up' || event.action === 'cancel') {
-            this.scrollViewTouched = false;
-            if (this.scrollViewAtTop) {
-                this.scrollViewAtTop = this.scrollView.verticalOffset === 0;
-                const y = touchY - (this.lastTouchY || touchY);
-                const totalDelta = this.translationY + y;
-                this.computeAndAnimateEndGestureAnimation(totalDelta);
+            if (this.scrollViewTouched) {
+                this.scrollViewTouched = false;
+                if (this.scrollViewAtTop) {
+                    this.scrollViewAtTop = this.scrollView.verticalOffset === 0;
+                    const y = touchY - (this.lastTouchY || touchY);
+                    if (y !== 0) {
+                        const totalDelta = this.translationY + y;
+                        this.computeAndAnimateEndGestureAnimation(totalDelta);
+                    }
+                }
             }
             this.isScrollEnabled = true;
         } else if ((!this.scrollViewTouched || this.scrollViewAtTop) && event.action === 'move') {
@@ -472,6 +474,7 @@ export class PersistentBottomSheet extends GridLayout {
     }
 
     async animateToPosition(position, duration = OPEN_DURATION) {
+        // console.log('animateToPosition', position, new Error().stack);
         if (this._scrollView && global.isAndroid) {
             // on android we get unwanted scroll effect while "swipping the view"
             // cancel the views touches before animation to prevent that
