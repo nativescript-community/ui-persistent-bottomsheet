@@ -1,6 +1,6 @@
 {
     "name": "@nativescript-community/ui-persistent-bottomsheet",
-    "version": "0.0.13",
+    "version": "0.0.14",
     "description": "NativeScript plugin that allows you to easily add a persistent bottomsheet to your projects.",
     "main": "./index",
     "sideEffects": false,
