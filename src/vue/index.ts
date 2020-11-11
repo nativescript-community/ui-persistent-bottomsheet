@@ -1,11 +1,12 @@
-import PBSComp from './component';
-
 const PBSPlugin = {
     install(Vue) {
         Vue.registerElement('BottomSheet', () => require('../index').PersistentBottomSheet, {
-            component: PBSComp,
+            model: {
+                prop: 'stepIndex',
+                event: 'stepIndexChange',
+            },
         });
     },
 };
 
-export default PBSComp;
+export default PBSPlugin;
