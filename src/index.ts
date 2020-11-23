@@ -386,10 +386,8 @@ export class PersistentBottomSheet extends GridLayout {
                 if (this.scrollViewAtTop) {
                     this.scrollViewAtTop = this.scrollView.verticalOffset === 0;
                     const y = touchY - (this.lastTouchY || touchY);
-                    if (y !== 0) {
-                        const totalDelta = this.translationY + y;
-                        this.computeAndAnimateEndGestureAnimation(totalDelta);
-                    }
+                    const totalDelta = this.translationY + y;
+                    this.computeAndAnimateEndGestureAnimation(totalDelta);
                 }
             }
             this.isScrollEnabled = true;
