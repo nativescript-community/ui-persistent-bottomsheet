@@ -11,7 +11,6 @@ import {
 } from '@nativescript-community/gesturehandler';
 import { Animation, AnimationDefinition, CSSType, Color, EventData, GridLayout, Property, ScrollEventData, ScrollView, TouchGestureEventData, Utils, View, booleanConverter } from '@nativescript/core';
 import { AnimationCurve } from '@nativescript/core/ui/enums';
-installGestures(false);
 const OPEN_DURATION = 200;
 const CLOSE_DURATION = 200;
 export const PAN_GESTURE_TAG = 12431;
