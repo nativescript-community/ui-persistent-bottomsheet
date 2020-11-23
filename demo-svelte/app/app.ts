@@ -11,8 +11,8 @@ import App from './App.svelte';
 import { install } from '@nativescript-community/ui-persistent-bottomsheet';
 install();
 
-import DrawerElement from '@nativescript-community/ui-persistent-bottomsheet/svelte';
-DrawerElement.register();
+import PBSElement from '@nativescript-community/ui-persistent-bottomsheet/svelte';
+PBSElement.register();
 import CollectionViewElement from '@nativescript-community/ui-collectionview/svelte';
 CollectionViewElement.register();
 registerNativeViewElement('cartomap', () => require('@nativescript-community/ui-carto/ui').CartoMap);
