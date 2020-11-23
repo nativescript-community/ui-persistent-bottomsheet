@@ -36,14 +36,14 @@ export const scrollViewProperty = new Property<PersistentBottomSheet, string>({
     name: 'scrollViewId',
     defaultValue: undefined,
     valueChanged: (target, oldValue, newValue) => {
-        target._onScrollViewIdChanged(oldValue, newValue);
+        (target as any)._onScrollViewIdChanged(oldValue, newValue);
     },
 });
 export const bottomSheetProperty = new Property<PersistentBottomSheet, View>({
     name: 'bottomSheet',
     defaultValue: undefined,
     valueChanged: (target, oldValue, newValue) => {
-        target._onBottomSheetChanged(oldValue, newValue);
+        (target as any)._onBottomSheetChanged(oldValue, newValue);
     },
 });
 export const gestureEnabledProperty = new Property<PersistentBottomSheet, boolean>({
@@ -75,7 +75,30 @@ export class PersistentBottomSheet extends GridLayout {
     // isPanning = false;
     backdropColor = null;
 
-    _steps: number[] = [70];
+    panGestureHandler: PanGestureHandler;
+
+    private stepIndex = 0;
+
+    private _steps: number[] = [70];
+    private isAnimating = false;
+    private prevDeltaY = 0;
+    private viewHeight = 0;
+    private bottomViewHeight = 0;
+
+    private lastScrollY: number;
+    private lastTouchY: number;
+    private scrollViewTouched = false;
+    private _translationY = -1;
+    private gestureEnabled = true;
+    private _scrollView: ScrollView;
+    private _isScrollEnabled = true;
+    private scrollViewAtTop: boolean = true;
+
+    constructor() {
+        super();
+        this.isPassThroughParentEnabled = true;
+        this.on('layoutChanged', this.onLayoutChange, this);
+    }
 
     get steps() {
         const result = this._steps || (this.bottomSheet && (this.bottomSheet as any).steps);
@@ -84,22 +107,10 @@ export class PersistentBottomSheet extends GridLayout {
     set steps(value: number[]) {
         this._steps = value;
     }
-    stepIndex = 0;
-
-    isAnimating = false;
-    prevDeltaY = 0;
-    viewHeight = 0;
-    bottomViewHeight = 0;
-    panGestureHandler: PanGestureHandler;
-
-    lastScrollY: number;
-    lastTouchY: number;
-    scrollViewTouched = false;
 
     // nativeGestureHandler: PanGestureHandler;
-    gestureEnabled = true;
     translationFunction?: (height: number, delta: number, progress: number) => { bottomSheet?: AnimationDefinition; backDrop?: AnimationDefinition };
-    initGestures() {
+    protected initGestures() {
         const manager = Manager.getInstance();
         const gestureHandler = manager.createGestureHandler(HandlerType.PAN, PAN_GESTURE_TAG, {
             shouldStartGesture: this.shouldStartGesture.bind(this),
@@ -116,7 +127,7 @@ export class PersistentBottomSheet extends GridLayout {
         gestureHandler.attachToView(this);
         this.panGestureHandler = gestureHandler as any;
     }
-    shouldStartGesture(data) {
+    protected shouldStartGesture(data) {
         const safeAreatop = Utils.layout.toDeviceIndependentPixels(this.getSafeAreaInsets().top);
         const y = data.y - safeAreatop;
         // console.log('shouldStartGesture ', safeAreatop, data, y, this.viewHeight - (this.translationMaxOffset - this.translationY), this.translationY, this.translationMaxOffset, this.viewHeight);
@@ -147,12 +158,6 @@ export class PersistentBottomSheet extends GridLayout {
     //         // this.nativeGestureHandler.attachToView(newValue);
     //     }
     // }
-    constructor() {
-        super();
-        this.isPassThroughParentEnabled = true;
-        this.on('layoutChanged', this.onLayoutChange, this);
-    }
-    _translationY = -1;
     get translationY() {
         return this._translationY;
     }
@@ -216,7 +221,7 @@ export class PersistentBottomSheet extends GridLayout {
             this.addBackdropView(index);
         }
     }
-    addBackdropView(index: number) {
+    protected addBackdropView(index: number) {
         // console.log('addBackdropView', index);
         this.backDrop = new GridLayout();
         this.backDrop.backgroundColor = this.backdropColor;
@@ -225,7 +230,6 @@ export class PersistentBottomSheet extends GridLayout {
         this.insertChild(this.backDrop, index);
     }
 
-    _scrollView: ScrollView;
 
     get scrollView() {
         return this._scrollView;
@@ -248,7 +252,7 @@ export class PersistentBottomSheet extends GridLayout {
             value.on('touch', this.onTouch, this);
         }
     }
-    public _onScrollViewIdChanged(oldValue: string, newValue: string) {
+    private _onScrollViewIdChanged(oldValue: string, newValue: string) {
         if (newValue && this.bottomSheet) {
             if (this.bottomSheet.isLoaded) {
                 const view: ScrollView = this.bottomSheet.getViewById(newValue);
@@ -264,7 +268,7 @@ export class PersistentBottomSheet extends GridLayout {
         }
     }
 
-    public _onBottomSheetChanged(oldValue: View, newValue: View) {
+    private _onBottomSheetChanged(oldValue: View, newValue: View) {
         if (oldValue) {
             this.removeChild(oldValue);
         }
@@ -306,7 +310,7 @@ export class PersistentBottomSheet extends GridLayout {
             },
         };
     }
-    onLayoutChange(event: EventData) {
+    private onLayoutChange(event: EventData) {
         const contentView = event.object as GridLayout;
         const height = Math.round(Utils.layout.toDeviceIndependentPixels(contentView.getMeasuredHeight()));
         this.viewHeight = height;
@@ -320,7 +324,7 @@ export class PersistentBottomSheet extends GridLayout {
             this.applyTrData(data);
         }
     }
-    onBottomLayoutChange(event: EventData) {
+    private onBottomLayoutChange(event: EventData) {
         const contentView = event.object as GridLayout;
         const height = Math.round(Utils.layout.toDeviceIndependentPixels(contentView.getMeasuredHeight()));
         this.bottomViewHeight = height;
@@ -334,21 +338,20 @@ export class PersistentBottomSheet extends GridLayout {
             this.applyTrData(data);
         }
     }
-    get scrollViewVerticalOffset() {
+    private get scrollViewVerticalOffset() {
         if (global.isAndroid) {
             return (this.scrollView.nativeViewProtected as androidx.core.view.ScrollingView).computeVerticalScrollOffset() / Utils.layout.getDisplayDensity();
         } else {
             return (this.scrollView.nativeViewProtected as UIScrollView).contentOffset.y;
         }
     }
-    set scrollViewOffset(value: number) {
+    private set scrollViewVerticalOffset(value: number) {
         if (global.isAndroid) {
             (this.scrollView.nativeViewProtected as androidx.recyclerview.widget.RecyclerView).scrollTo(0, 0);
         } else {
             (this.scrollView.nativeViewProtected as UIScrollView).contentOffset = CGPointMake(this.scrollView.nativeViewProtected.contentOffset.x, 0);
         }
     }
-    _isScrollEnabled = true;
     get isScrollEnabled() {
         return this._isScrollEnabled;
     }
@@ -360,7 +363,7 @@ export class PersistentBottomSheet extends GridLayout {
             }
         }
     }
-    onTouch(event: TouchGestureEventData) {
+    private onTouch(event: TouchGestureEventData) {
         let touchY;
         // if (this.animationTimer) {
         //     clearTimeout(this.animationTimer);
@@ -413,8 +416,7 @@ export class PersistentBottomSheet extends GridLayout {
         }
         this.lastTouchY = touchY;
     }
-    scrollViewAtTop: boolean = true;
-    onScroll(event: ScrollEventData & { scrollOffset?: number }) {
+    private onScroll(event: ScrollEventData & { scrollOffset?: number }) {
         const scrollY = event.scrollOffset || event.scrollY || 0;
         if (scrollY <= 0) {
             this.scrollViewAtTop = true;
@@ -429,7 +431,7 @@ export class PersistentBottomSheet extends GridLayout {
         }
         this.lastScrollY = scrollY;
     }
-    onGestureState(args: GestureStateEventData) {
+    private onGestureState(args: GestureStateEventData) {
         const { state, prevState, extraData, view } = args.data;
         if (prevState === GestureState.ACTIVE) {
             const { velocityY, translationY } = extraData;
@@ -441,7 +443,7 @@ export class PersistentBottomSheet extends GridLayout {
         }
     }
 
-    computeAndAnimateEndGestureAnimation(totalDelta: number) {
+    private computeAndAnimateEndGestureAnimation(totalDelta: number) {
         const viewHeight = this.bottomViewHeight;
         const steps = this.steps;
         let stepIndex = 0;
@@ -461,7 +463,7 @@ export class PersistentBottomSheet extends GridLayout {
         stepIndexProperty.nativeValueChange(this, stepIndex);
         this.animateToPosition(viewHeight - destSnapPoint, Math.min(distance * 2, OPEN_DURATION));
     }
-    onGestureTouch(args: GestureTouchEventData) {
+    private onGestureTouch(args: GestureTouchEventData) {
         const data = args.data;
         if (data.state !== GestureState.ACTIVE) {
             return;
@@ -480,7 +482,7 @@ export class PersistentBottomSheet extends GridLayout {
         this.prevDeltaY = deltaY;
     }
 
-    applyTrData(trData: { [k: string]: any }) {
+    private applyTrData(trData: { [k: string]: any }) {
         Object.keys(trData).forEach((k) => {
             const { target, ...others } = trData[k];
             if (target) {
@@ -492,11 +494,11 @@ export class PersistentBottomSheet extends GridLayout {
         });
     }
 
-    constrainY(y) {
+    private constrainY(y) {
         return Math.max(Math.min(y, this.bottomViewHeight), this.bottomViewHeight - this.translationMaxOffset);
     }
 
-    async animateToPosition(position, duration = OPEN_DURATION) {
+    private async animateToPosition(position, duration = OPEN_DURATION) {
         if (this._scrollView && global.isAndroid) {
             // on android we get unwanted scroll effect while "swipping the view"
             // cancel the views touches before animation to prevent that
