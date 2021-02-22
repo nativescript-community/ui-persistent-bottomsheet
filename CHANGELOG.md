@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.15](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.14...v0.0.15) (2021-02-22)
+
+
+### Bug Fixes
+
+* dont start gesture if no steps or [0] ([f184494](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/f184494321da98b7474720be55c0bf2faf94b080))
+* release touch on scrollview ([795da2d](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/795da2d0f9d8159737f497bf1dc1029b022c852f))
+
+
+
+
+
 ## [0.0.14](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.13...v0.0.14) (2020-11-11)
 
 
