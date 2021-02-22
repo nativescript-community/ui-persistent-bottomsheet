@@ -7,7 +7,7 @@ import {
     HandlerType,
     Manager,
     PanGestureHandler,
-    install as installGestures,
+    install as installGestures
 } from '@nativescript-community/gesturehandler';
 import { Animation, AnimationDefinition, CSSType, Color, EventData, GridLayout, Property, ScrollEventData, ScrollView, TouchGestureEventData, Utils, View, booleanConverter } from '@nativescript/core';
 import { AnimationCurve } from '@nativescript/core/ui/enums';
@@ -37,34 +37,34 @@ export const scrollViewProperty = new Property<PersistentBottomSheet, string>({
     defaultValue: undefined,
     valueChanged: (target, oldValue, newValue) => {
         (target as any)._onScrollViewIdChanged(oldValue, newValue);
-    },
+    }
 });
 export const bottomSheetProperty = new Property<PersistentBottomSheet, View>({
     name: 'bottomSheet',
     defaultValue: undefined,
     valueChanged: (target, oldValue, newValue) => {
         (target as any)._onBottomSheetChanged(oldValue, newValue);
-    },
+    }
 });
 export const gestureEnabledProperty = new Property<PersistentBottomSheet, boolean>({
     name: 'gestureEnabled',
     defaultValue: true,
-    valueConverter: booleanConverter,
+    valueConverter: booleanConverter
 });
 export const stepsProperty = new Property<PersistentBottomSheet, number[]>({
     name: 'steps',
-    defaultValue: [70],
+    defaultValue: [70]
 });
 export const stepIndexProperty = new Property<PersistentBottomSheet, number>({
     name: 'stepIndex',
-    defaultValue: 0,
+    defaultValue: 0
 });
 export const backdropColorProperty = new Property<PersistentBottomSheet, Color>({
     name: 'backdropColor',
-    valueConverter: (c) => (c ? new Color(c) : null),
+    valueConverter: (c) => (c ? new Color(c) : null)
 });
 export const translationFunctionProperty = new Property<PersistentBottomSheet, Function>({
-    name: 'translationFunction',
+    name: 'translationFunction'
 });
 
 @CSSType('PersistentBottomSheet')
@@ -119,7 +119,7 @@ export class PersistentBottomSheet extends GridLayout {
             simultaneousHandlers: [NATIVE_GESTURE_TAG],
             // shouldCancelWhenOutside: true,
             // activeOffsetX: this.leftSwipeDistance,
-            minDist: SWIPE_DISTANCE_MINIMUM,
+            minDist: SWIPE_DISTANCE_MINIMUM
             // failOffsetX: SWIPE_DISTANCE_MINIMUM,
         });
         gestureHandler.on(GestureHandlerTouchEvent, this.onGestureTouch, this);
@@ -128,6 +128,9 @@ export class PersistentBottomSheet extends GridLayout {
         this.panGestureHandler = gestureHandler as any;
     }
     protected shouldStartGesture(data) {
+        if (this.steps.length === 0 || (this.steps.length === 1 && this.steps[0] === 0)) {
+            return false;
+        }
         const safeAreatop = Utils.layout.toDeviceIndependentPixels(this.getSafeAreaInsets().top);
         const y = data.y - safeAreatop;
         // console.log('shouldStartGesture ', safeAreatop, data, y, this.viewHeight - (this.translationMaxOffset - this.translationY), this.translationY, this.translationMaxOffset, this.viewHeight);
@@ -230,7 +233,6 @@ export class PersistentBottomSheet extends GridLayout {
         this.insertChild(this.backDrop, index);
     }
 
-
     get scrollView() {
         return this._scrollView;
     }
@@ -303,11 +305,11 @@ export class PersistentBottomSheet extends GridLayout {
         }
         return {
             bottomSheet: {
-                translateY: value,
+                translateY: value
             },
             backDrop: {
-                opacity: progress,
-            },
+                opacity: progress
+            }
         };
     }
     private onLayoutChange(event: EventData) {
@@ -518,7 +520,7 @@ export class PersistentBottomSheet extends GridLayout {
                     return Object.assign(
                         {
                             curve: AnimationCurve.easeOut,
-                            duration,
+                            duration
                         },
                         transformAnimationValues(trData[k])
                     );
@@ -527,7 +529,7 @@ export class PersistentBottomSheet extends GridLayout {
                         {
                             target: this[k],
                             curve: AnimationCurve.easeOut,
-                            duration,
+                            duration
                         },
                         transformAnimationValues(trData[k])
                     );
