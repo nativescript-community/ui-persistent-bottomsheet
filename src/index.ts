@@ -89,7 +89,7 @@ export class PersistentBottomSheet extends GridLayout {
     private lastTouchY: number;
     private scrollViewTouched = false;
     private _translationY = -1;
-    private gestureEnabled = true;
+    public gestureEnabled = true;
     private _scrollView: ScrollView;
     private _isScrollEnabled = true;
     private scrollViewAtTop: boolean = true;
