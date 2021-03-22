@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.16](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.15...v0.0.16) (2021-03-22)
+
+
+### Bug Fixes
+
+* allow to customize gesture options ([a14dce0](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/a14dce09eea3993c6d4c98e7a891e9a9748c65ad))
+
+
+
+
+
 ## [0.0.15](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.14...v0.0.15) (2021-02-22)
 
 
