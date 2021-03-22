@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.17](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.16...v0.0.17) (2021-03-22)
+
+
+### Bug Fixes
+
+* need to bet init as null to be reactive ([b0704d4](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/b0704d495d934ede1ed3fa1b5960e6502210f0d4))
+
+
+
+
+
 ## [0.0.16](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.15...v0.0.16) (2021-03-22)
 
 
