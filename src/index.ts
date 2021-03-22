@@ -95,7 +95,7 @@ export class PersistentBottomSheet extends GridLayout {
     private _isScrollEnabled = true;
     private scrollViewAtTop: boolean = true;
 
-    public panGestureOptions: PanGestureHandlerOptions & { gestureId?: number };
+    public panGestureOptions: PanGestureHandlerOptions & { gestureId?: number } = null;
 
     constructor() {
         super();
