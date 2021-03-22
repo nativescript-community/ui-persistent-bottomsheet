@@ -7,6 +7,7 @@ import {
     HandlerType,
     Manager,
     PanGestureHandler,
+    PanGestureHandlerOptions,
     install as installGestures
 } from '@nativescript-community/gesturehandler';
 import { Animation, AnimationDefinition, CSSType, Color, EventData, GridLayout, Property, ScrollEventData, ScrollView, TouchGestureEventData, Utils, View, booleanConverter } from '@nativescript/core';
@@ -94,6 +95,8 @@ export class PersistentBottomSheet extends GridLayout {
     private _isScrollEnabled = true;
     private scrollViewAtTop: boolean = true;
 
+    public panGestureOptions: PanGestureHandlerOptions & { gestureId?: number };
+
     constructor() {
         super();
         this.isPassThroughParentEnabled = true;
@@ -112,15 +115,12 @@ export class PersistentBottomSheet extends GridLayout {
     translationFunction?: (height: number, delta: number, progress: number) => { bottomSheet?: AnimationDefinition; backDrop?: AnimationDefinition };
     protected initGestures() {
         const manager = Manager.getInstance();
-        const gestureHandler = manager.createGestureHandler(HandlerType.PAN, PAN_GESTURE_TAG, {
+        const options = { gestureId: PAN_GESTURE_TAG, ...this.panGestureOptions };
+        const gestureHandler = manager.createGestureHandler(HandlerType.PAN, options.gestureId, {
             shouldStartGesture: this.shouldStartGesture.bind(this),
-            // waitFor: [NATIVE_GESTURE_TAG],
-            // disallowInterruption: true,
             simultaneousHandlers: [NATIVE_GESTURE_TAG],
-            // shouldCancelWhenOutside: true,
-            // activeOffsetX: this.leftSwipeDistance,
-            minDist: SWIPE_DISTANCE_MINIMUM
-            // failOffsetX: SWIPE_DISTANCE_MINIMUM,
+            minDist: SWIPE_DISTANCE_MINIMUM,
+            ...options
         });
         gestureHandler.on(GestureHandlerTouchEvent, this.onGestureTouch, this);
         gestureHandler.on(GestureHandlerStateEvent, this.onGestureState, this);
