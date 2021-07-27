@@ -7,7 +7,9 @@ NativeScript plugin that allows you to easily add persistent bottomsheet to your
 [![npm downloads](https://img.shields.io/npm/dt/@nativescript-community/ui-persistent-bottomsheet.svg)](https://www.npmjs.com/package/@nativescript-community/ui-persistent-bottomsheet)
 
 ---
+
 ## Table of Contents
+
 1. [Installation](#installation)
 2. [Configuration](#configuration)
 3. [API](#api)
@@ -24,6 +26,7 @@ ns plugin add @nativescript-community/ui-persistent-bottomsheet
 ```
 
 ## Configuration
+
 For gestures to work, make sure to add the following code block inside the main application file (e.g. app.ts):
 
 ```typescript
@@ -43,8 +46,6 @@ install();
 | steps            | `[70]`                            | `number[]`                   | the different available steps           |
 | backdropColor        | `new Color('rgba(0, 0, 0, 0.7)')` | `Color`                     | The color of the backdrop behind the drawer             |
 
-
-
 ### Methods
 
 | Name         | Return | Description                                     |
@@ -52,6 +53,7 @@ install();
 | install()    | `void` | Install gestures                                |
 
 ## Usage in Angular
+
 Import the module into your project.
 
 ```typescript
@@ -83,6 +85,7 @@ Then in your component add the following:
    
 </BottomSheet>
 ```
+
 For a more complete example, look in the `demo-ng` directory.
 
 ## Usage in Vue
@@ -107,6 +110,7 @@ Then in your component add the following:
 
 </BottomSheet>
 ```
+
 For a more complete example, look in the `demo-vue` directory.
 
 ## Usage in Svelte
@@ -131,6 +135,7 @@ Then in your component, add the following:
 
 </bottomsheet>
 ```
+
 For a more complete example, look in the `demo-svelte` directory.
 
 ## Usage in React
@@ -143,6 +148,7 @@ BottomSheetElement.register();
 ```
 
 Then in your component, add the following:
+
 ```ts
 import { BottomSheet } from "@nativescript-community/ui-persistent-bottomsheet/react"
 ```
@@ -158,16 +164,19 @@ import { BottomSheet } from "@nativescript-community/ui-persistent-bottomsheet/r
 
 </BottomSheet>
 ```
+
 For a more complete example, look in the `demo-react` directory.
 
 ## Demos
+
 This repository includes Angular, Vue.js, and Svelte demos. In order to run these execute the following in your shell:
+
 ```shell
-$ git clone https://github.com/@nativescript-community/ui-persistent-bottomsheet
-$ cd ui-drawer
-$ npm run i
-$ npm run setup
-$ npm run build && npm run build.angular
-$ cd demo-ng # or demo-vue or demo-svelte or demo-react
-$ ns run ios|android
+git clone https://github.com/nativescript-community/ui-persistent-bottomsheet
+cd ui-persistent-bottomsheet
+npm i
+npm run setup
+npm run build && npm run build.angular
+cd demo-ng # or demo-vue or demo-svelte or demo-react
+ns run ios|android # or run `npx nativescript run ios|android` when you do not have nativescript installed globally
 ```
