@@ -28,25 +28,24 @@
     "category-general"
   ],
   "dependencies": {
-    "@nativescript-community/gesturehandler": "^0.1.27",
-    "@nativescript-community/ui-carto": "^1.4.8",
-    "@nativescript-community/ui-collectionview": "^4.0.9",
+    "@nativescript-community/gesturehandler": "^0.1.42",
+    "@nativescript-community/ui-carto": "^1.5.0",
+    "@nativescript-community/ui-collectionview": "^4.0.29",
     "@nativescript-community/ui-persistent-bottomsheet": "../plugin",
     "@nativescript/core": "~7.0.13",
-    "@nativescript/theme": "~3.0.0",
-    "nativescript-vue": "~2.8.1"
+    "@nativescript/theme": "~3.0.1",
+    "nativescript-vue": "~2.9.0"
   },
   "devDependencies": {
-    "@babel/core": "~7.1.6",
-    "@babel/preset-env": "~7.1.6",
+    "@babel/core": "~7.13.16",
+    "@babel/preset-env": "~7.13.15",
     "@nativescript/android": "7.0.1",
     "@nativescript/ios": "7.0.4",
-    "@nativescript/webpack": "~3.0.8",
-    "babel-loader": "~8.1.0",
-    "cross-var": "^1.1.0",
-    "nativescript-vue-template-compiler": "~2.8.1",
-    "node-sass": "^4.14.1",
-    "vue-loader": "~15.9.4"
+    "@nativescript/webpack": "~4.1.0",
+    "babel-loader": "^8.2.2",
+    "nativescript-vue-template-compiler": "~2.9.0",
+    "sass": "^1.32.11",
+    "vue-loader": "~15.9.6"
   },
   "gitHead": "f282c57dc05817a655bca5e81ce9d7228ae70d4c",
   "private": "true",
