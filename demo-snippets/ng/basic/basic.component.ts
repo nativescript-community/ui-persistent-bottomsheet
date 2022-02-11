@@ -36,6 +36,10 @@ export class BasicComponent {
         this.stepIndex = index;
     }
 
+    onIndexChanged(event) {
+        this.setIndex(event.value);
+    }
+
     goBack(): void {
         this.router.back();
     }

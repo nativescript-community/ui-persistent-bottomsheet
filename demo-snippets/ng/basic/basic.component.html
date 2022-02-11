@@ -3,7 +3,8 @@
     <Label text="Basic Drawer"></Label>
 </ActionBar>
 
-<BottomSheet [(stepIndex)]="stepIndex" [steps]="[56, 156, 456]" backdropColor="#88000000">
+<BottomSheet [stepIndex]="stepIndex"
+(stepIndexChange)="onIndexChanged($event)" [steps]="[56, 156, 456]" backdropColor="#88000000">
     <StackLayout backgroundColor="red">
         <Label text="This is the main content"></Label>
     </StackLayout>
