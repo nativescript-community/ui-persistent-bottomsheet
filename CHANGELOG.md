@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.18](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.17...v0.0.18) (2022-02-11)
+
+
+### Bug Fixes
+
+* angular demo almost working ([900f3f1](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/900f3f1bfda5093d75e2a57e23a53c132e1c7077))
+* **angular:** fix for main content not showing ([ae9ce28](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/ae9ce28646e8b77865384146449c9c5d4d43f77e))
+
+
+
+
+
 ## [0.0.17](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.16...v0.0.17) (2021-03-22)
 
 

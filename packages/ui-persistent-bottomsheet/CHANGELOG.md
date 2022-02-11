@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.18](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.17...v0.0.18) (2022-02-11)
+
+**Note:** Version bump only for package @nativescript-community/ui-persistent-bottomsheet
+
+
+
+
+
 ## [0.0.17](https://github.com/nativescript-community/persistent-bottomsheet/compare/v0.0.16...v0.0.17) (2021-03-22)
 
 **Note:** Version bump only for package @nativescript-community/ui-persistent-bottomsheet
