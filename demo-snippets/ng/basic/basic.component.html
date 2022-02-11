@@ -1,0 +1,36 @@
+<ActionBar>
+    <NavigationButton android.systemIcon="ic_menu_back" (tap)="goBack()"></NavigationButton>
+    <Label text="Basic Drawer"></Label>
+</ActionBar>
+
+<BottomSheet [(stepIndex)]="stepIndex" [steps]="[56, 156, 456]" scrollViewId="scrollView" backdropColor="#88000000">
+    <StackLayout backgroundColor="red">
+        <Label text="This is the main content" />
+    </StackLayout>
+    <gridlayout bottomSheet backgroundColor="yellow" rows="56, 100, 300">
+        <stacklayout row="0" orientation="horizontal">
+            <button text="My Profile" class="button" (tap)="stepIndex = 0" />
+            <button text="Settings" class="button" (tap)="stepIndex = 1"/>
+            <button text="Rate Us" class="button" (tap)="stepIndex = 2"/>
+            <button text="Support" class="button" />
+            <button text="Contact" class="button" />
+        </stacklayout>
+        <stacklayout row="1" orientation="horizontal">
+            <button text="My Profile" class="button" />
+            <button text="Settings" class="button" />
+            <button text="Rate Us" class="button" />
+            <button text="Support" class="button" />
+            <button text="Contact" class="button" />
+        </stacklayout>
+        <ListView [items]="items" row="2" id="scrollView" colWidth="50%" rowHeight="100">
+            <v-template>
+                <gridlayout rows="*, auto" [backgroundColor]="item.color" class="item">
+                    <stacklayout row="1">
+                        <label row="1" :text="item.name" class="title" />
+                        <label row="1" :text="item.color" class="subtitle" />
+                    </stacklayout>
+                </gridlayout>
+            </v-template>
+        </ListView>
+    </gridlayout>
+</BottomSheet>

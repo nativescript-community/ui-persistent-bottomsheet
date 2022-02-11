@@ -1,0 +1,9 @@
+{
+    "dest": "../../../packages/ui-persistent-bottomsheet/angular",
+    "lib": {
+      "entryFile": "index.ts"
+    },
+    "allowedNonPeerDependencies": [
+      "."
+    ]
+}
