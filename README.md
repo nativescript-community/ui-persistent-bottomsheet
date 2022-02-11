@@ -176,7 +176,7 @@ git clone https://github.com/nativescript-community/ui-persistent-bottomsheet
 cd ui-persistent-bottomsheet
 npm i
 npm run setup
-npm run build && npm run build.angular
+npm run build.all
 cd demo-ng # or demo-vue or demo-svelte or demo-react
 ns run ios|android # or run `npx nativescript run ios|android` when you do not have nativescript installed globally
 ```
