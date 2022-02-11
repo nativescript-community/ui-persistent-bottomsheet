@@ -98,6 +98,8 @@ const sbsMeta: ViewClassMeta = {
 
         if (childView.id === BOTTOMSHEET) {
             pbs.bottomSheet = childView;
+        } else {
+            pbs.addChild(childView);
         }
     },
     removeChild: (parent: NgView, child: NgView) => {
@@ -106,6 +108,8 @@ const sbsMeta: ViewClassMeta = {
 
         if (childView.id === BOTTOMSHEET) {
             pbs.bottomSheet = null;
+        } else {
+            pbs.removeChild(childView);
         }
     }
 };
