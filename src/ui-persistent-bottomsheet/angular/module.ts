@@ -47,8 +47,10 @@ export class BottomSheetComponent {
     }
 
     set stepIndex(value) {
-        this._stepIndex = value;
-        this.pbs.stepIndex = this._stepIndex;
+        if (!isNaN(value)) {
+            this._stepIndex = value;
+            this.pbs.stepIndex = this._stepIndex;
+        }
     }
     @Input()
     get backdropColor() {

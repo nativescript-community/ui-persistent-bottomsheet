@@ -32,6 +32,10 @@ export class BasicComponent {
         { index: 19, name: 'ASBESTOS', color: '#7f8c8d' }
     ];
 
+    setIndex(index: number) {
+        this.stepIndex = index;
+    }
+
     goBack(): void {
         this.router.back();
     }

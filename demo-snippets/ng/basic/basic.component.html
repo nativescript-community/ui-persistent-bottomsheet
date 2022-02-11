@@ -3,34 +3,28 @@
     <Label text="Basic Drawer"></Label>
 </ActionBar>
 
-<BottomSheet [(stepIndex)]="stepIndex" [steps]="[56, 156, 456]" scrollViewId="scrollView" backdropColor="#88000000">
+<BottomSheet [(stepIndex)]="stepIndex" [steps]="[56, 156, 456]" backdropColor="#88000000">
     <StackLayout backgroundColor="red">
-        <Label text="This is the main content" />
+        <Label text="This is the main content"></Label>
     </StackLayout>
-    <gridlayout bottomSheet backgroundColor="yellow" rows="56, 100, 300">
-        <stacklayout row="0" orientation="horizontal">
-            <button text="My Profile" class="button" (tap)="stepIndex = 0" />
-            <button text="Settings" class="button" (tap)="stepIndex = 1"/>
-            <button text="Rate Us" class="button" (tap)="stepIndex = 2"/>
-            <button text="Support" class="button" />
-            <button text="Contact" class="button" />
-        </stacklayout>
-        <stacklayout row="1" orientation="horizontal">
-            <button text="My Profile" class="button" />
-            <button text="Settings" class="button" />
-            <button text="Rate Us" class="button" />
-            <button text="Support" class="button" />
-            <button text="Contact" class="button" />
-        </stacklayout>
-        <ListView [items]="items" row="2" id="scrollView" colWidth="50%" rowHeight="100">
-            <v-template>
-                <gridlayout rows="*, auto" [backgroundColor]="item.color" class="item">
-                    <stacklayout row="1">
-                        <label row="1" :text="item.name" class="title" />
-                        <label row="1" :text="item.color" class="subtitle" />
-                    </stacklayout>
-                </gridlayout>
-            </v-template>
+    <GridLayout bottomSheet backgroundColor="yellow" rows="56, 100, 300">
+        <StackLayout row="0" orientation="horizontal">
+            <Button text="Open Step 0" class="Button" (tap)="setIndex(0)"></Button>
+            <Button text="Open Step 1" class="Button" (tap)="setIndex(1)"></Button>
+            <Button text="Open Step 2" class="Button" (tap)="setIndex(2)"></Button>
+        </StackLayout>
+        <StackLayout row="1" backgroundColor="orange">
+            <Label text="Second step section"></Label>
+        </StackLayout>
+        <ListView [items]="items" row="2" colWidth="50%" rowHeight="100">
+            <ng-template let-item="item" let-i="index">
+                <GridLayout rows="*, auto" class="item" [backgroundColor]="item.color">
+                    <StackLayout row="1">
+                        <Label row="1" [text]="item.name" class="title"></Label>
+                        <Label row="1" [text]="item.color" class="subtitle"></Label>
+                    </StackLayout>
+                </GridLayout>
+            </ng-template>
         </ListView>
-    </gridlayout>
+    </GridLayout>
 </BottomSheet>
