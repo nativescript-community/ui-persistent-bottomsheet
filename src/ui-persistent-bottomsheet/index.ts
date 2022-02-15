@@ -309,9 +309,14 @@ export class PersistentBottomSheet extends GridLayout {
     computeTranslationData(height) {
         const max = this.translationMaxOffset;
         const diff = height - max;
-        const value = this._translationY;
+        let value = this._translationY;
         const progress = 1 - (this._translationY - diff) / max;
-        // console.log('computeTranslationData', value, max, diff, progress);
+
+        if (global.isIOS && progress === 0 && !this.iosIgnoreSafeArea) {
+            // if this is the 0 steop ensure it gets hidden even with safeArea
+            const safeArea = this.getSafeAreaInsets();
+            value += Utils.layout.toDeviceIndependentPixels(safeArea.bottom);
+        }
         if (this.translationFunction) {
             return this.translationFunction(height, value, progress);
         }
