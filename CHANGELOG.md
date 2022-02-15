@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.19](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.18...v0.0.19) (2022-02-15)
+
+
+### Bug Fixes
+
+* **ios:** safe area support ([ba4fb6f](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/ba4fb6fad187747489ed106d1b5f59574f432909))
+
+
+
+
+
 ## [0.0.18](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.17...v0.0.18) (2022-02-11)
 
 
