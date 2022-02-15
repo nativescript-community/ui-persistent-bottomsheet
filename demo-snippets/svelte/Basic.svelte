@@ -27,9 +27,12 @@
 
 <page>
     <actionBar title="Svelte Demo" />
-    <bottomsheet {stepIndex} on:stepIndexChange={(e) => (stepIndex = e.value)} steps={[56, 156, 456]} scrollViewId="scrollView" backdropColor="#88000000">
+    <bottomsheet {stepIndex} on:stepIndexChange={(e) => (stepIndex = e.value)} steps={[0, 100, 400]} scrollViewId="scrollView" backdropColor="#88000000">
         <stackLayout backgroundColor="red">
             <label text="This is the main content" />
+            <button text="Close" on:tap={() => (stepIndex = 0)} />
+            <button text="Open 1" on:tap={() => (stepIndex = 1)} />
+            <button text="Open 2" on:tap={() => (stepIndex = 2)} />
         </stackLayout>
         <gridlayout prop:bottomSheet backgroundColor="white" rows="56, 100, 300">
             <stacklayout row="0" orientation="horizontal">
