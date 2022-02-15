@@ -143,14 +143,17 @@ export class PersistentBottomSheet extends GridLayout {
         if (this.steps.length === 0 || (this.steps.length === 1 && this.steps[0] === 0)) {
             return false;
         }
-        const safeAreatop = Utils.layout.toDeviceIndependentPixels(this.getSafeAreaInsets().top);
-        const y = data.y - safeAreatop;
+        let deltaY = 0;
+        if (global.isIOS && !this.iosIgnoreSafeArea) {
+            deltaY -= Utils.layout.toDeviceIndependentPixels(this.getSafeAreaInsets().top);
+        }
+        const y = data.y + deltaY;
         // console.log('shouldStartGesture ', safeAreatop, data, y, this.viewHeight - (this.translationMaxOffset - this.translationY), this.translationY, this.translationMaxOffset, this.viewHeight);
         if (y < this.viewHeight - (this.bottomViewHeight - this.translationY)) {
             return false;
         }
         if (this._scrollView) {
-            const posY = this._scrollView && this.scrollView.getLocationRelativeTo(this).y - safeAreatop;
+            const posY = this._scrollView && this.scrollView.getLocationRelativeTo(this).y + deltaY;
             if (y >= posY && y <= posY + this.scrollView.getMeasuredHeight()) {
                 return false;
             }
