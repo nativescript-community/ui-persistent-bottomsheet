@@ -28,8 +28,8 @@ import {
 } from '@nativescript/core';
 const OPEN_DURATION = 200;
 const CLOSE_DURATION = 200;
-export const PAN_GESTURE_TAG = 12431;
-export const NATIVE_GESTURE_TAG = 12421;
+export let PAN_GESTURE_TAG = 12400;
+// export const NATIVE_GESTURE_TAG = 12421;
 const DEFAULT_TRIGGER_WIDTH = 20;
 const SWIPE_DISTANCE_MINIMUM = 10;
 
@@ -127,10 +127,10 @@ export class PersistentBottomSheet extends GridLayout {
     translationFunction?: (height: number, delta: number, progress: number) => { bottomSheet?: AnimationDefinition; backDrop?: AnimationDefinition };
     protected initGestures() {
         const manager = Manager.getInstance();
-        const options = { gestureId: PAN_GESTURE_TAG, ...this.panGestureOptions };
+        const options = { gestureId: PAN_GESTURE_TAG++, ...this.panGestureOptions };
         const gestureHandler = manager.createGestureHandler(HandlerType.PAN, options.gestureId, {
             shouldStartGesture: this.shouldStartGesture.bind(this),
-            simultaneousHandlers: [NATIVE_GESTURE_TAG],
+            // simultaneousHandlers: [NATIVE_GESTURE_TAG],
             minDist: SWIPE_DISTANCE_MINIMUM,
             ...options
         });
