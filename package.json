@@ -65,5 +65,10 @@
             "demo.vue.ios": "Runs the Vue demo on iOS.",
             "watch": "Watch for changes in the plugin source and re-build."
         }
+    },
+    "dependenciesMeta": {
+        "@nativescript-community/plugin-seed-tools": {
+            "injected": true
+        }
     }
 }
