@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.20](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.19...v0.0.20) (2022-03-29)
+
+
+### Bug Fixes
+
+* ensure gesture tag is unique ([7013c49](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/7013c4974052b94c61ccbff6b26cd6018b9b4497))
+
+
+
+
+
 ## [0.0.19](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.18...v0.0.19) (2022-02-15)
 
 
