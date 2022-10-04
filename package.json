@@ -38,7 +38,8 @@
         "sync": "node ./tools/sync.js",
         "sync.test": "node ./tools/sync.js",
         "tsc": "cpy '**/*.d.ts' '../plugin' --parents --cwd=src && tsc -skipLibCheck -d",
-        "update": "node ./tools/update.js"
+        "update": "node ./tools/update.js",
+        "doc": "node tools/builddoc.mjs && git add docs/* && git commit -m \"chore:doc\""
     },
     "commitlint": {
         "extends": [
@@ -46,7 +47,7 @@
         ]
     },
     "dependencies": {
-        "@nativescript-community/gesturehandler": "^2.0.3",
+        "@nativescript-community/gesturehandler": "^2.0.5",
         "@nativescript-community/plugin-seed-tools": "file:tools"
     },
     "ntl": {
@@ -65,5 +66,10 @@
             "demo.vue.ios": "Runs the Vue demo on iOS.",
             "watch": "Watch for changes in the plugin source and re-build."
         }
+    },
+    "engines": {
+        "npm": "please use yarn or pnpm",
+        "yarn": ">= 1.19.1",
+        "pnpm": ">= 7.0.0"
     }
 }
