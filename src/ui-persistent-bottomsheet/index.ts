@@ -109,6 +109,8 @@ export class PersistentBottomSheet extends GridLayout {
     private _isScrollEnabled = true;
     private scrollViewAtTop: boolean = true;
 
+    private animation: Animation;
+
     constructor() {
         super();
         this.isPassThroughParentEnabled = true;
@@ -522,6 +524,9 @@ export class PersistentBottomSheet extends GridLayout {
 
     animating = false;
     private async animateToPosition(position, duration = OPEN_DURATION) {
+        if (this.animation) {
+            this.animation.cancel();
+        }
         if (this.animating) {
             return;
         }
@@ -562,18 +567,22 @@ export class PersistentBottomSheet extends GridLayout {
             })
             .filter((a) => !!a);
         try {
-            await new Animation(params).play();
+            this.animation = new Animation(params);
+            await this.animation.play();
         } catch (err) {
+            //ensure we go to end position
+            this.applyTrData(trData);
             console.error('BottomSheet animation cancelled', err);
         } finally {
             this.isScrollEnabled = true;
             this.animating = false;
-            if (position !== 0) {
-            } else {
-                // if (this.backDrop) {
-                //     this.backDrop.visibility = 'hidden';
-                // }
-            }
+            this.animation = null;
+            // if (position !== 0) {
+            // } else {
+            //     // if (this.backDrop) {
+            //     //     this.backDrop.visibility = 'hidden';
+            //     // }
+            // }
         }
     }
 }
