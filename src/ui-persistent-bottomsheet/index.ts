@@ -4,28 +4,31 @@ import {
     GestureState,
     GestureStateEventData,
     GestureTouchEventData,
-    HandlerType, install as installGestures, Manager,
+    HandlerType,
+    Manager,
     PanGestureHandler,
-    PanGestureHandlerOptions
+    PanGestureHandlerOptions,
+    install as installGestures
 } from '@nativescript-community/gesturehandler';
 import {
     AbsoluteLayout,
     Animation,
-    AnimationDefinition, booleanConverter, Color,
-    CoreTypes, CSSType, EventData,
+    AnimationDefinition,
+    CSSType,
+    Color,
+    CoreTypes,
+    EventData,
     GridLayout,
     Property,
     ScrollEventData,
     ScrollView,
     TouchGestureEventData,
     Utils,
-    View
+    View,
+    booleanConverter
 } from '@nativescript/core';
 const OPEN_DURATION = 200;
-const CLOSE_DURATION = 200;
 export let PAN_GESTURE_TAG = 12400;
-// export const NATIVE_GESTURE_TAG = 12421;
-const DEFAULT_TRIGGER_WIDTH = 20;
 const SWIPE_DISTANCE_MINIMUM = 10;
 
 function transformAnimationValues(values) {
@@ -121,7 +124,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     }
 
     // nativeGestureHandler: PanGestureHandler;
-    translationFunction?: (height: number, delta: number, progress: number) => { bottomSheet?: AnimationDefinition; backDrop?: AnimationDefinition };
+    translationFunction?: (delta: number, max: number, progress: number) => { bottomSheet?: AnimationDefinition; backDrop?: AnimationDefinition };
     protected initGestures() {
         const manager = Manager.getInstance();
         const options = { gestureId: PAN_GESTURE_TAG++, ...this.panGestureOptions };
@@ -219,7 +222,11 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         }
     }
     protected addBackdropView(index: number) {
-        this.backDrop = new GridLayout();
+        this.backDrop = new AbsoluteLayout();
+        this.backDrop.width = this.backDrop.height = {
+            unit: '%',
+            value: 100
+        };
         this.backDrop.backgroundColor = this.backdropColor;
         this.backDrop.opacity = 0;
         this.backDrop.isUserInteractionEnabled = false;
@@ -297,18 +304,17 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         }
     }
 
-    computeTranslationData(ty) {
+    computeTranslationData() {
         const max = this.translationMaxOffset;
         let value = this._translationY;
-        const diff = max - ty;
-        const progress = ty / max;
+        const progress = -value / max;
         if (__IOS__ && progress === 0 && !this.iosIgnoreSafeArea) {
             // if this is the 0 steop ensure it gets hidden even with safeArea
             const safeArea = this.getSafeAreaInsets();
             value += Utils.layout.toDeviceIndependentPixels(safeArea.bottom);
         }
         if (this.translationFunction) {
-            return this.translationFunction(ty, value, progress);
+            return this.translationFunction(value, max, progress);
         }
         return {
             bottomSheet: {
@@ -334,7 +340,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             const step = steps[this.stepIndex];
             const ty = step;
             this.translationY = -ty;
-            const data = this.computeTranslationData(ty);
+            const data = this.computeTranslationData();
             this.applyTrData(data);
         }
     }
@@ -400,7 +406,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             const y = touchY - (this.lastTouchY || touchY);
             const trY = this.constrainY(this.translationY + y);
             this.translationY = trY;
-            const trData = this.computeTranslationData(-trY);
+            const trData = this.computeTranslationData();
             this.applyTrData(trData);
         }
         this.lastTouchY = touchY;
@@ -462,7 +468,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         const y = deltaY - this.prevDeltaY;
         const trY = this.constrainY(this.translationY + y);
         this.translationY = trY;
-        const trData = this.computeTranslationData(-trY);
+        const trData = this.computeTranslationData();
         this.applyTrData(trData);
         this.prevDeltaY = deltaY;
     }
@@ -502,7 +508,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         }
         // const height = this.bottomViewHeight;
         this.translationY = -position;
-        const trData = this.computeTranslationData(position);
+        const trData = this.computeTranslationData();
         const params = Object.keys(trData)
             .map((k) => {
                 const data = trData[k];
