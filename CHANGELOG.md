@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.24](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.23...v0.0.24) (2022-11-07)
+
+### Bug Fixes
+
+-   `translationFunction` parameters fix to `(delta, max, progress)` ([63fef75](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/63fef75e5c500d48b889ee2541f5309df58ecaab))
+
 ## [0.0.23](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.22...v0.0.23) (2022-11-07)
 
 **Note:** Version bump only for package @nativescript-community/ui-persistent-bottomsheet
