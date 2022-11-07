@@ -4,11 +4,11 @@
             <Label text="Basic Drawer" />
         </ActionBar>
 
-        <BottomSheet v-model="stepIndex" :steps="[56, 156, 456]" scrollViewId="scrollView" backdropColor="#88000000">
+        <BottomSheet v-model="stepIndex" :steps="[56, 156, 456]" scrollViewId="scrollView" backdropColor="#88000000" backgroundColor="purple">
             <StackLayout backgroundColor="red">
                 <Label text="This is the main content" />
             </StackLayout>
-            <gridlayout ~bottomSheet backgroundColor="yellow" rows="56, 100, 300">
+            <gridlayout ~bottomSheet backgroundColor="yellow" rows="56, 100, 300" width="100%">
                 <stacklayout row="0" orientation="horizontal">
                     <button text="My Profile" class="button" @tap="stepIndex = 0" />
                     <button text="Settings" class="button" @tap="stepIndex = 1" />
