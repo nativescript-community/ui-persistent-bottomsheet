@@ -70,7 +70,7 @@ export class BottomSheetComponent {
         this.pbs.scrollViewId = value;
     }
     @Input()
-    get panGestureOptions() {
+    get panGestureOptions(): any {
         return this.pbs.panGestureOptions;
     }
 
