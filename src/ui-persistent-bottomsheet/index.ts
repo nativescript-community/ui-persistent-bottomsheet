@@ -4,27 +4,22 @@ import {
     GestureState,
     GestureStateEventData,
     GestureTouchEventData,
-    HandlerType,
-    Manager,
+    HandlerType, install as installGestures, Manager,
     PanGestureHandler,
-    PanGestureHandlerOptions,
-    install as installGestures
+    PanGestureHandlerOptions
 } from '@nativescript-community/gesturehandler';
 import {
+    AbsoluteLayout,
     Animation,
-    AnimationDefinition,
-    CSSType,
-    Color,
-    CoreTypes,
-    EventData,
+    AnimationDefinition, booleanConverter, Color,
+    CoreTypes, CSSType, EventData,
     GridLayout,
     Property,
     ScrollEventData,
     ScrollView,
     TouchGestureEventData,
     Utils,
-    View,
-    booleanConverter
+    View
 } from '@nativescript/core';
 const OPEN_DURATION = 200;
 const CLOSE_DURATION = 200;
@@ -58,7 +53,7 @@ export const bottomSheetProperty = new Property<PersistentBottomSheet, View>({
     name: 'bottomSheet',
     defaultValue: undefined,
     valueChanged: (target, oldValue, newValue) => {
-        (target as any)._onBottomSheetChanged(oldValue, newValue);
+        target._onBottomSheetChanged(oldValue, newValue);
     }
 });
 export const gestureEnabledProperty = new Property<PersistentBottomSheet, boolean>({
@@ -83,7 +78,7 @@ export const translationFunctionProperty = new Property<PersistentBottomSheet, F
 });
 
 @CSSType('PersistentBottomSheet')
-export class PersistentBottomSheet extends GridLayout {
+export class PersistentBottomSheet extends AbsoluteLayout {
     public bottomSheet: View;
     public scrollViewId: string;
     // isPanning = false;
@@ -98,7 +93,7 @@ export class PersistentBottomSheet extends GridLayout {
     private isAnimating = false;
     private prevDeltaY = 0;
     private viewHeight = 0;
-    private bottomViewHeight = 0;
+    // private bottomViewHeight = 0;
 
     private lastScrollY: number;
     private lastTouchY: number;
@@ -150,8 +145,7 @@ export class PersistentBottomSheet extends GridLayout {
             deltaY -= Utils.layout.toDeviceIndependentPixels(this.getSafeAreaInsets().top);
         }
         const y = data.y + deltaY;
-        // console.log('shouldStartGesture ', safeAreatop, data, y, this.viewHeight - (this.translationMaxOffset - this.translationY), this.translationY, this.translationMaxOffset, this.viewHeight);
-        if (y < this.viewHeight - (this.bottomViewHeight - this.translationY)) {
+        if (y < this.viewHeight + this.translationY) {
             return false;
         }
         if (this._scrollView) {
@@ -162,27 +156,10 @@ export class PersistentBottomSheet extends GridLayout {
         }
         return true;
     }
-    // initNativeGestureHandler(newValue: View) {
-    //     // console.log('initNativeGestureHandler', newValue);
-    //     if (!this.nativeGestureHandler) {
-    //         const manager = Manager.getInstance();
-    //         const gestureHandler = manager.createGestureHandler(HandlerType.NATIVE_VIEW, NATIVE_GESTURE_TAG, {
-    //             shouldActivateOnStart: true,
-    //             shouldCancelWhenOutside: false,
-    //             // simultaneousHandlers: [PAN_GESTURE_TAG],
-    //         });
-    //         // gestureHandler.on(GestureHandlerStateEvent, this.onNativeGestureState, this);
-    //         this.nativeGestureHandler = gestureHandler as any;
-    //     }
-    //     if (this.nativeGestureHandler.getView() !== newValue) {
-    //         // this.nativeGestureHandler.attachToView(newValue);
-    //     }
-    // }
     get translationY() {
         return this._translationY;
     }
     set translationY(value: number) {
-        // console.log('set translationY', value)
         if (this._translationY !== -1) {
             this.isScrollEnabled = value === 0;
         }
@@ -230,10 +207,10 @@ export class PersistentBottomSheet extends GridLayout {
         }
     }
     [stepIndexProperty.setNative](value: number) {
-        if (this.viewHeight !== 0) {
-            // we are layed out
-            this.animateToPosition(this.steps[value]);
-        }
+        // if (this.viewHeight !== 0) {
+        // we are layed out
+        this.animateToPosition(this.steps[value]);
+        // }
     }
     [backdropColorProperty.setNative](value: Color) {
         if (!this.backDrop && this.bottomSheet) {
@@ -242,7 +219,6 @@ export class PersistentBottomSheet extends GridLayout {
         }
     }
     protected addBackdropView(index: number) {
-        // console.log('addBackdropView', index);
         this.backDrop = new GridLayout();
         this.backDrop.backgroundColor = this.backdropColor;
         this.backDrop.opacity = 0;
@@ -287,14 +263,24 @@ export class PersistentBottomSheet extends GridLayout {
         }
     }
 
-    private _onBottomSheetChanged(oldValue: View, newValue: View) {
+    _onBottomSheetChanged(oldValue: View, newValue: View) {
         if (oldValue) {
             this.removeChild(oldValue);
         }
         if (newValue) {
             newValue.iosOverflowSafeAreaEnabled = false;
-            newValue.verticalAlignment = 'bottom';
-            newValue.on('layoutChanged', this.onBottomLayoutChange, this);
+            if (!newValue.width) {
+                newValue.width = {
+                    unit: '%',
+                    value: 100
+                };
+            }
+            // newValue.top = {
+            //     unit: 'px',
+            //     value: this.viewHeight
+            // };
+            // newValue.verticalAlignment = 'bottom';
+            // newValue.on('layoutChanged', this.onBottomLayoutChange, this);
             let index;
             if (!newValue.parent) {
                 index = this.getChildrenCount();
@@ -311,19 +297,18 @@ export class PersistentBottomSheet extends GridLayout {
         }
     }
 
-    computeTranslationData(height) {
+    computeTranslationData(ty) {
         const max = this.translationMaxOffset;
-        const diff = height - max;
         let value = this._translationY;
-        const progress = 1 - (this._translationY - diff) / max;
-
-        if (global.isIOS && progress === 0 && !this.iosIgnoreSafeArea) {
+        const diff = max - ty;
+        const progress = ty / max;
+        if (__IOS__ && progress === 0 && !this.iosIgnoreSafeArea) {
             // if this is the 0 steop ensure it gets hidden even with safeArea
             const safeArea = this.getSafeAreaInsets();
             value += Utils.layout.toDeviceIndependentPixels(safeArea.bottom);
         }
         if (this.translationFunction) {
-            return this.translationFunction(height, value, progress);
+            return this.translationFunction(ty, value, progress);
         }
         return {
             bottomSheet: {
@@ -338,27 +323,18 @@ export class PersistentBottomSheet extends GridLayout {
         const contentView = event.object as GridLayout;
         const height = Math.round(Utils.layout.toDeviceIndependentPixels(contentView.getMeasuredHeight()));
         this.viewHeight = height;
-        if (this.translationY === -1 && this.bottomViewHeight !== 0) {
-            const height = this.bottomViewHeight;
-            const steps = this.steps;
-            const step = steps[this.stepIndex];
-            const ty = height - step;
-            this.translationY = ty;
-            const data = this.computeTranslationData(height);
-            this.applyTrData(data);
+        if (this.bottomSheet) {
+            this.bottomSheet.top = {
+                unit: 'px',
+                value: contentView.getMeasuredHeight()
+            };
         }
-    }
-    private onBottomLayoutChange(event: EventData) {
-        const contentView = event.object as GridLayout;
-        const height = Math.round(Utils.layout.toDeviceIndependentPixels(contentView.getMeasuredHeight()));
-        this.bottomViewHeight = height;
-        if (this.translationY === -1 && this.viewHeight !== 0) {
-            const height = this.bottomViewHeight;
+        if (this.translationY === -1 && this.bottomSheet) {
             const steps = this.steps;
             const step = steps[this.stepIndex];
-            const ty = height - step;
-            this.translationY = ty;
-            const data = this.computeTranslationData(height);
+            const ty = step;
+            this.translationY = -ty;
+            const data = this.computeTranslationData(ty);
             this.applyTrData(data);
         }
     }
@@ -389,10 +365,6 @@ export class PersistentBottomSheet extends GridLayout {
     }
     private onTouch(event: TouchGestureEventData) {
         let touchY;
-        // if (this.animationTimer) {
-        //     clearTimeout(this.animationTimer);
-        //     this.animationTimer = null;
-        // }
         // touch event gives you relative touch which varies with translateY
         // so we use touch location in the window
         if (global.isAndroid) {
@@ -401,12 +373,6 @@ export class PersistentBottomSheet extends GridLayout {
             touchY = (event.ios.touches.anyObject() as UITouch).locationInView(null).y;
         }
         if (event.action === 'down') {
-            // this.scrollViewTouched = true;
-            // this.lastScrollY = this.scrollViewVerticalOffset;
-            // this.scrollViewAtTop = this.lastScrollY === 0;
-            // if (this.scrollViewAtTop) {
-            //     this.panGestureHandler.cancel();
-            // }
         } else if (event.action === 'up' || event.action === 'cancel') {
             if (this.scrollViewTouched) {
                 this.scrollViewTouched = false;
@@ -414,7 +380,7 @@ export class PersistentBottomSheet extends GridLayout {
                     this.scrollViewAtTop = this.scrollView.verticalOffset === 0;
                     const y = touchY - (this.lastTouchY || touchY);
                     const totalDelta = this.translationY + y;
-                    this.computeAndAnimateEndGestureAnimation(totalDelta);
+                    this.computeAndAnimateEndGestureAnimation(-totalDelta);
                 }
             }
             this.isScrollEnabled = true;
@@ -433,9 +399,8 @@ export class PersistentBottomSheet extends GridLayout {
             }
             const y = touchY - (this.lastTouchY || touchY);
             const trY = this.constrainY(this.translationY + y);
-            const height = this.bottomViewHeight;
             this.translationY = trY;
-            const trData = this.computeTranslationData(height);
+            const trData = this.computeTranslationData(-trY);
             this.applyTrData(trData);
         }
         this.lastTouchY = touchY;
@@ -462,19 +427,18 @@ export class PersistentBottomSheet extends GridLayout {
             const dragToss = 0.05;
             const y = translationY - this.prevDeltaY;
             const totalDelta = this.translationY + (y + dragToss * velocityY);
-            this.computeAndAnimateEndGestureAnimation(totalDelta);
+            this.computeAndAnimateEndGestureAnimation(-totalDelta);
             this.prevDeltaY = 0;
         }
     }
 
     private computeAndAnimateEndGestureAnimation(totalDelta: number) {
-        const viewHeight = this.bottomViewHeight;
         const steps = this.steps;
         let stepIndex = 0;
-        let destSnapPoint = viewHeight - steps[stepIndex];
+        let destSnapPoint = steps[stepIndex];
         let distance = Math.abs(destSnapPoint - totalDelta);
         for (let i = 0; i < steps.length; i++) {
-            const snapPoint = viewHeight - steps[i];
+            const snapPoint = steps[i];
             const distFromSnap = Math.abs(snapPoint - totalDelta);
             if (distFromSnap <= Math.abs(destSnapPoint - totalDelta)) {
                 destSnapPoint = snapPoint;
@@ -482,10 +446,8 @@ export class PersistentBottomSheet extends GridLayout {
                 distance = distFromSnap;
             }
         }
-        // stepIndexProperty.nativeValueChange
-        // this.stepIndex = stepIndex;
         stepIndexProperty.nativeValueChange(this, stepIndex);
-        this.animateToPosition(viewHeight - destSnapPoint, Math.min(distance * 2, OPEN_DURATION));
+        this.animateToPosition(destSnapPoint, Math.min(distance * 2, OPEN_DURATION));
     }
     private onGestureTouch(args: GestureTouchEventData) {
         const data = args.data;
@@ -500,8 +462,7 @@ export class PersistentBottomSheet extends GridLayout {
         const y = deltaY - this.prevDeltaY;
         const trY = this.constrainY(this.translationY + y);
         this.translationY = trY;
-        const height = this.bottomViewHeight;
-        const trData = this.computeTranslationData(height);
+        const trData = this.computeTranslationData(-trY);
         this.applyTrData(trData);
         this.prevDeltaY = deltaY;
     }
@@ -519,7 +480,7 @@ export class PersistentBottomSheet extends GridLayout {
     }
 
     private constrainY(y) {
-        return Math.max(Math.min(y, this.bottomViewHeight), this.bottomViewHeight - this.translationMaxOffset);
+        return Math.max(Math.min(y, 0), -this.translationMaxOffset);
     }
 
     animating = false;
@@ -539,10 +500,9 @@ export class PersistentBottomSheet extends GridLayout {
             event.setAction(android.view.MotionEvent.ACTION_CANCEL);
             this.scrollView.nativeViewProtected.dispatchTouchEvent(event);
         }
-        const height = this.bottomViewHeight;
-        this.translationY = height - position;
-        const trData = this.computeTranslationData(height);
-
+        // const height = this.bottomViewHeight;
+        this.translationY = -position;
+        const trData = this.computeTranslationData(position);
         const params = Object.keys(trData)
             .map((k) => {
                 const data = trData[k];
@@ -577,12 +537,6 @@ export class PersistentBottomSheet extends GridLayout {
             this.isScrollEnabled = true;
             this.animating = false;
             this.animation = null;
-            // if (position !== 0) {
-            // } else {
-            //     // if (this.backDrop) {
-            //     //     this.backDrop.visibility = 'hidden';
-            //     // }
-            // }
         }
     }
 }
