@@ -4,7 +4,7 @@
             <Label text="Basic Drawer" />
         </ActionBar>
 
-        <BottomSheet v-model="stepIndex" :steps="[56, 156, 456]" scrollViewId="scrollView" backdropColor="#88000000" backgroundColor="purple">
+        <BottomSheet v-model="stepIndex" :steps="[56, 156, 456]" scrollViewId="scrollView" backdropColor="#00000088" backgroundColor="purple">
             <StackLayout backgroundColor="red">
                 <Label text="This is the main content" />
             </StackLayout>
