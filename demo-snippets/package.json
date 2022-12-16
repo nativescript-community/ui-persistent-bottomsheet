@@ -1,8 +1,9 @@
 {
     "name": "@nativescript-community/template-snippet",
+    "private": true,
     "version": "0.0.1",
     "dependencies": {
-        "@nativescript-community/gesturehandler": "^0.2.1",
-        "@nativescript-community/ui-persistent-bottomsheet": "file:../packages/ui-persistent-bottomsheet"
+        "@nativescript-community/gesturehandler": "^2.0.8",
+        "@nativescript-community/ui-persistent-bottomsheet": "0.0.24"
     }
 }

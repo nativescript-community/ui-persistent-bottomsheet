@@ -8,6 +8,6 @@
             "tns-core-modules/*": ["./node_modules/@nativescript/core/*"]
         }
     },
-    "include": ["../../src/ui-persistent-bottomsheet/**/*", "../../references.d.ts", "../../src/references.d.ts"],
+    "include": ["../../src/ui-persistent-bottomsheet/**/*", "../../references.d.ts", "../../tools/references.d.ts", "../../src/references.d.ts"],
     "exclude": ["../../src/ui-persistent-bottomsheet/angular/**"]
 }
