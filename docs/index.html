@@ -1,291 +1,347 @@
-<!doctype html>
-<html class="default no-js">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>@nativescript-community/ui-persistent-bottomsheet</title>
-	<meta name="description" content="Documentation for @nativescript-community/ui-persistent-bottomsheet">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="assets/css/main.css">
-</head>
-<body>
-<header>
-	<div class="tsd-page-toolbar">
-		<div class="container">
-			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
-					<div class="field">
-						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
-						<input id="tsd-search-field" type="text" />
-					</div>
-					<ul class="results">
-						<li class="state loading">Preparing search index...</li>
-						<li class="state failure">The search index is not available</li>
-					</ul>
-					<a href="index.html" class="title">@nativescript-community/ui-persistent-bottomsheet</a>
-				</div>
-				<div class="table-cell" id="tsd-widgets">
-					<div id="tsd-filter">
-						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
-						<div class="tsd-filter-group">
-							<div class="tsd-select" id="tsd-filter-visibility">
-								<span class="tsd-select-label">All</span>
-								<ul class="tsd-select-list">
-									<li data-value="public">Public</li>
-									<li data-value="protected">Public/Protected</li>
-									<li data-value="private" class="selected">All</li>
-								</ul>
-							</div>
-							<input type="checkbox" id="tsd-filter-inherited" checked />
-							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-						</div>
-					</div>
-					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="tsd-page-title">
-		<div class="container">
-			<ul class="tsd-breadcrumb">
-				<li>
-					<a href="globals.html">Globals</a>
-				</li>
-			</ul>
-			<h1>@nativescript-community/ui-persistent-bottomsheet</h1>
-		</div>
-	</div>
-</header>
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@nativescript-community/ui-persistent-bottomsheet</title><meta name="description" content="Documentation for @nativescript-community/ui-persistent-bottomsheet"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base=".">
+<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<div class="field">
+<div id="tsd-toolbar-links"><a href="https://docs.nativescript.org">Nativescript Doc</a></div></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@nativescript-community/ui-persistent-bottomsheet</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
 <div class="container container-main">
-	<div class="row">
-		<div class="col-8 col-content">
-			<div class="tsd-panel tsd-typography">
-				<a href="#nativescript-bottomsheet" id="nativescript-bottomsheet" style="color: inherit; text-decoration: none;">
-					<h1>NativeScript BottomSheet</h1>
-				</a>
-				<p>NativeScript plugin that allows you to easily add persistent bottomsheet to your projects.</p>
-				<p><a href="https://www.npmjs.com/package/@nativescript-community/ui-persistent-bottomsheet"><img src="https://img.shields.io/npm/v/@nativescript-community/ui-persistent-bottomsheet.svg" alt="npm"></a>
-					<a href="https://www.npmjs.com/package/@nativescript-community/ui-persistent-bottomsheet"><img src="https://img.shields.io/npm/dm/@nativescript-community/ui-persistent-bottomsheet.svg" alt="npm downloads"></a>
-				<a href="https://www.npmjs.com/package/@nativescript-community/ui-persistent-bottomsheet"><img src="https://img.shields.io/npm/dt/@nativescript-community/ui-persistent-bottomsheet.svg" alt="npm downloads"></a></p>
-				<hr>
-				<a href="#table-of-contents" id="table-of-contents" style="color: inherit; text-decoration: none;">
-					<h2>Table of Contents</h2>
-				</a>
-				<ol>
-					<li><a href="#installation">Installation</a></li>
-					<li><a href="#configuration">Configuration</a></li>
-					<li><a href="#api">API</a></li>
-					<li><a href="#usage-in-angular">Usage in Angular</a></li>
-					<li><a href="#usage-in-vue">Usage in Vue</a></li>
-					<li><a href="#usage-in-svelte">Usage in Svelte</a></li>
-					<li><a href="#usage-in-react">Usage in React</a></li>
-					<li><a href="#demos">Demos</a></li>
-				</ol>
-				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
-					<h2>Installation</h2>
-				</a>
-				<pre><code>ns plugin <span class="hljs-keyword">add</span><span class="bash"> @nativescript-community/ui-persistent-bottomsheet</span></code></pre>
-				<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
-					<h2>Configuration</h2>
-				</a>
-				<p>For gestures to work, make sure to add the following code block inside the main application file (e.g. app.ts):</p>
-				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { install } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@nativescript-community/ui-persistent-bottomsheet&#x27;</span>;
-install();</code></pre>
-				<a href="#api" id="api" style="color: inherit; text-decoration: none;">
-					<h2>API</h2>
-				</a>
-				<a href="#properties" id="properties" style="color: inherit; text-decoration: none;">
-					<h3>Properties</h3>
-				</a>
-				<table>
-					<thead>
-						<tr>
-							<th>Property</th>
-							<th>Default</th>
-							<th>Type</th>
-							<th>Description</th>
-						</tr>
-					</thead>
-					<tbody><tr>
-							<td>bottomSheet</td>
-							<td><code>undefined</code></td>
-							<td><code>View</code></td>
-							<td>View containing the content for the bottomsheet</td>
-						</tr>
-						<tr>
-							<td>gestureEnabled</td>
-							<td><code>true</code></td>
-							<td><code>boolean</code></td>
-							<td>Boolean setting if swipe gestures are enabled</td>
-						</tr>
-						<tr>
-							<td>stepIndex</td>
-							<td><code>0</code></td>
-							<td><code>number</code></td>
-							<td>the index of current step (mutable)</td>
-						</tr>
-						<tr>
-							<td>steps</td>
-							<td><code>[70]</code></td>
-							<td><code>number[]</code></td>
-							<td>the different available steps</td>
-						</tr>
-						<tr>
-							<td>backdropColor</td>
-							<td><code>new Color(&#39;rgba(0, 0, 0, 0.7)&#39;)</code></td>
-							<td><code>Color</code></td>
-							<td>The color of the backdrop behind the drawer</td>
-						</tr>
-				</tbody></table>
-				<a href="#methods" id="methods" style="color: inherit; text-decoration: none;">
-					<h3>Methods</h3>
-				</a>
-				<table>
-					<thead>
-						<tr>
-							<th>Name</th>
-							<th>Return</th>
-							<th>Description</th>
-						</tr>
-					</thead>
-					<tbody><tr>
-							<td>install()</td>
-							<td><code>void</code></td>
-							<td>Install gestures</td>
-						</tr>
-				</tbody></table>
-				<a href="#usage-in-angular" id="usage-in-angular" style="color: inherit; text-decoration: none;">
-					<h2>Usage in Angular</h2>
-				</a>
-				<p>Import the module into your project.</p>
-				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { PBSModule } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@nativescript-community/ui-persistent-bottomsheet/angular&quot;</span>;
+<div class="col-8 col-content">
+<div class="tsd-page-title">
+<h2>@nativescript-community/ui-persistent-bottomsheet</h2></div>
+<div class="tsd-panel tsd-typography"><!-- ⚠️ This README has been generated from the file(s) "blueprint.md" ⚠️--><!-- ⚠️ This README has been generated from the file(s) "blueprint.md" ⚠️-->
+<!--  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      DO NOT EDIT THIS READEME DIRECTLY! Edit "bluesprint.md" instead.
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+<h1 align="center">@nativescript-community/ui-persistent-bottomsheet</h1>
+<p align="center">
+        <a href="https://npmcharts.com/compare/@nativescript-community/ui-persistent-bottomsheet?minimal=true"><img alt="Downloads per month" src="https://img.shields.io/npm/dm/@nativescript-community/ui-persistent-bottomsheet.svg" height="20"/></a>
+<a href="https://www.npmjs.com/package/@nativescript-community/ui-persistent-bottomsheet"><img alt="NPM Version" src="https://img.shields.io/npm/v/@nativescript-community/ui-persistent-bottomsheet.svg" height="20"/></a>
+    </p>
 
-<span class="hljs-meta">@NgModule</span>({
-    <span class="hljs-attr">imports</span>: [
-        PBSModule
-    ]
-    <span class="hljs-attr">schemas</span>: [
-        NO_ERRORS_SCHEMA
-    ]
-})
+<p align="center">
+  <b>NativeScript plugin that allows you to easily add a persistent bottomsheet to your projects.</b></br>
+  <sub><sub>
+</p>
 
-<span class="hljs-keyword">export</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppModule</span> </span>{ }</code></pre>
-				<p>Then in your component add the following:</p>
-				<pre><code class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">BottomSheet</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">StackLayout</span> <span class="hljs-attr">backgroundColor</span>=<span class="hljs-string">&quot;white&quot;</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">Label</span> <span class="hljs-attr">text</span>=<span class="hljs-string">&quot;This is the main content&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Label</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">StackLayout</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">GridLayout</span> <span class="hljs-attr">bottomSheet</span> <span class="hljs-attr">backgroundColor</span>=<span class="hljs-string">&quot;white&quot;</span> <span class="hljs-attr">height</span>=<span class="hljs-string">&quot;70&quot;</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">Label</span> <span class="hljs-attr">text</span>=<span class="hljs-string">&quot;This is the side drawer content&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Label</span>&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">GridLayout</span>&gt;</span>
+<br />
 
 
-<span class="hljs-tag">&lt;/<span class="hljs-name">BottomSheet</span>&gt;</span></code></pre>
-				<p>For a more complete example, look in the <code>demo-ng</code> directory.</p>
-				<a href="#usage-in-vue" id="usage-in-vue" style="color: inherit; text-decoration: none;">
-					<h2>Usage in Vue</h2>
-				</a>
-				<p>Register the plugin in your <code>app.js</code>.</p>
-				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> BottomSheetPlugin <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;~/components/drawer/vue&#x27;</span>;
-Vue.use(BottomSheetPlugin);</code></pre>
-				<p>Then in your component add the following:</p>
-				<pre><code class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">BottomSheet</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">StackLayout</span> <span class="hljs-attr">backgroundColor</span>=<span class="hljs-string">&quot;white&quot;</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">Label</span> <span class="hljs-attr">text</span>=<span class="hljs-string">&quot;This is the main content&quot;</span> /&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">StackLayout</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">GridLayout</span> ~<span class="hljs-attr">bottomSheet</span> <span class="hljs-attr">backgroundColor</span>=<span class="hljs-string">&quot;white&quot;</span> <span class="hljs-attr">height</span>=<span class="hljs-string">&quot;70&quot;</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">Label</span> <span class="hljs-attr">text</span>=<span class="hljs-string">&quot;This is the side drawer content&quot;</span> /&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">GridLayout</span>&gt;</span>
+<table>
+<thead>
+<tr>
+<th><img src="https://raw.githubusercontent.com/nativescript-community/ui-persistent-bottomsheet/master/images/demo-ios.gif" height="500" /></th>
+<th><img src="https://raw.githubusercontent.com/nativescript-community/ui-persistent-bottomsheet/master/images/demo-android.gif" height="500" /></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>iOS Demo</td>
+<td>Android Demo</td>
+</tr>
+</tbody></table>
+<p><a href="#table-of-contents"></a></p>
+<p><a href="#table-of-contents"></a></p>
 
-<span class="hljs-tag">&lt;/<span class="hljs-name">BottomSheet</span>&gt;</span></code></pre>
-				<p>For a more complete example, look in the <code>demo-vue</code> directory.</p>
-				<a href="#usage-in-svelte" id="usage-in-svelte" style="color: inherit; text-decoration: none;">
-					<h2>Usage in Svelte</h2>
-				</a>
-				<p>Register the plugin in your <code>app.ts</code>.</p>
-				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> BottomSheetElement <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@nativescript-community/ui-persistent-bottomsheet/svelte&#x27;</span>;
-BottomSheetElement.register();</code></pre>
-				<p>Then in your component, add the following:</p>
-				<pre><code class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">bottomsheet</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">stacklayout</span>  <span class="hljs-attr">backgroundColor</span>=<span class="hljs-string">&quot;white&quot;</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">Label</span> <span class="hljs-attr">text</span>=<span class="hljs-string">&quot;This is the main content&quot;</span> /&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">stacklayout</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">gridlayout</span> <span class="hljs-attr">prop:bottomSheet</span> <span class="hljs-attr">backgroundColor</span>=<span class="hljs-string">&quot;white&quot;</span> <span class="hljs-attr">height</span>=<span class="hljs-string">&quot;70&quot;</span>&gt;</span>
-      <span class="hljs-tag">&lt;<span class="hljs-name">Label</span> <span class="hljs-attr">text</span>=<span class="hljs-string">&quot;This is the side drawer content&quot;</span> /&gt;</span>
-    <span class="hljs-tag">&lt;/<span class="hljs-name">gridlayout</span>&gt;</span>
+<a href="#table-of-contents" id="table-of-contents" style="color: inherit; text-decoration: none;">
+  <h2>Table of Contents</h2>
+</a>
+<ul>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#api">API</a><ul>
+<li><a href="#properties">Properties</a></li>
+<li><a href="#methods">Methods</a></li>
+</ul>
+</li>
+<li><a href="#usage-in-angular">Usage in Angular</a></li>
+<li><a href="#usage-in-vue">Usage in Vue</a></li>
+<li><a href="#usage-in-svelte">Usage in Svelte</a></li>
+<li><a href="#usage-in-react">Usage in React</a></li>
+<li><a href="#demos">Demos</a></li>
+<li><a href="#demos-and-development">Demos and Development</a><ul>
+<li><a href="#repo-setup">Repo Setup</a></li>
+<li><a href="#build">Build</a></li>
+<li><a href="#demos-1">Demos</a></li>
+</ul>
+</li>
+<li><a href="#contributing">Contributing</a><ul>
+<li><a href="#update-repo-">Update repo </a></li>
+<li><a href="#update-readme-">Update readme </a></li>
+<li><a href="#update-doc-">Update doc </a></li>
+<li><a href="#publish">Publish</a></li>
+</ul>
+</li>
+<li><a href="#questions">Questions</a></li>
+</ul>
+<p><a href="#installation"></a></p>
+<p><a href="#installation"></a></p>
 
-<span class="hljs-tag">&lt;/<span class="hljs-name">bottomsheet</span>&gt;</span></code></pre>
-				<p>For a more complete example, look in the <code>demo-svelte</code> directory.</p>
-				<a href="#usage-in-react" id="usage-in-react" style="color: inherit; text-decoration: none;">
-					<h2>Usage in React</h2>
-				</a>
-				<p>Register the plugin in your <code>app.ts</code>.</p>
-				<pre><code class="language-typescript"><span class="hljs-keyword">import</span> BottomSheetElement <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@nativescript-community/ui-persistent-bottomsheet/react&#x27;</span>;
-BottomSheetElement.register();</code></pre>
-				<p>Then in your component, add the following:</p>
-				<pre><code class="language-ts"><span class="hljs-keyword">import</span> { BottomSheet } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@nativescript-community/ui-persistent-bottomsheet/react&quot;</span></code></pre>
-				<pre><code class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">BottomSheet</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-name">stackLayout</span> <span class="hljs-attr">backgroundColor</span>=<span class="hljs-string">&quot;white&quot;</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">text</span>=<span class="hljs-string">&quot;This is the main content&quot;</span> /&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-name">stackLayout</span>&gt;</span>
-  <span class="hljs-tag">&lt;<span class="hljs-name">gridLayout</span> <span class="hljs-attr">nodeRole</span>=<span class="hljs-string">&quot;bottomSheet&quot;</span> <span class="hljs-attr">backgroundColor</span>=<span class="hljs-string">&quot;white&quot;</span> <span class="hljs-attr">height</span>=<span class="hljs-string">&quot;70&quot;</span>&gt;</span>
-    <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">text</span>=<span class="hljs-string">&quot;This is the side drawer content&quot;</span> /&gt;</span>
-  <span class="hljs-tag">&lt;/<span class="hljs-name">gridLayout</span>&gt;</span>
+<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+  <h2>Installation</h2>
+</a>
+<p>Run the following command from the root of your project:</p>
+<p><code>ns plugin add @nativescript-community/ui-persistent-bottomsheet</code></p>
+<p><a href="#configuration"></a></p>
+<p><a href="#configuration"></a></p>
 
-<span class="hljs-tag">&lt;/<span class="hljs-name">BottomSheet</span>&gt;</span></code></pre>
-				<p>For a more complete example, look in the <code>demo-react</code> directory.</p>
-				<a href="#demos" id="demos" style="color: inherit; text-decoration: none;">
-					<h2>Demos</h2>
-				</a>
-				<p>This repository includes Angular, Vue.js, and Svelte demos. In order to run these execute the following in your shell:</p>
-				<pre><code class="language-shell"><span class="hljs-meta">$</span><span class="bash"> git <span class="hljs-built_in">clone</span> https://github.com/@nativescript-community/ui-persistent-bottomsheet</span>
-<span class="hljs-meta">$</span><span class="bash"> <span class="hljs-built_in">cd</span> ui-drawer</span>
-<span class="hljs-meta">$</span><span class="bash"> npm run i</span>
-<span class="hljs-meta">$</span><span class="bash"> npm run setup</span>
-<span class="hljs-meta">$</span><span class="bash"> npm run build &amp;&amp; npm run build.angular</span>
-<span class="hljs-meta">$</span><span class="bash"> <span class="hljs-built_in">cd</span> demo-ng <span class="hljs-comment"># or demo-vue or demo-svelte or demo-react</span></span>
-<span class="hljs-meta">$</span><span class="bash"> ns run ios|android</span></code></pre>
-			</div>
-		</div>
-		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
-			<nav class="tsd-navigation primary">
-				<ul>
-					<li class="globals  ">
-						<a href="globals.html"><em>Globals</em></a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="modules/_src_index_.html">&quot;src/index&quot;</a>
-					</li>
-				</ul>
-			</nav>
-			<nav class="tsd-navigation secondary menu-sticky">
-				<ul class="before-current">
-				</ul>
-			</nav>
-		</div>
-	</div>
-</div>
-<footer class="with-border-bottom">
-	<div class="container">
-		<h2>Legend</h2>
-		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-			</ul>
-		</div>
-	</div>
-</footer>
+<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
+  <h2>Configuration</h2>
+</a>
+<p>For gestures to work, make sure to add the following code block inside the main application file (e.g. app.ts):</p>
+<pre><code class="language-typescript"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">install</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;@nativescript-community/ui-persistent-bottomsheet&#39;</span><span class="hl-1">;</span><br/><span class="hl-4">install</span><span class="hl-1">();</span>
+</code></pre>
+<p><a href="#api"></a></p>
+<p><a href="#api"></a></p>
+
+<a href="#api" id="api" style="color: inherit; text-decoration: none;">
+  <h2>API</h2>
+</a>
+
+<a href="#properties" id="properties" style="color: inherit; text-decoration: none;">
+  <h3>Properties</h3>
+</a>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>bottomSheet</td>
+<td><code>undefined</code></td>
+<td><code>View</code></td>
+<td>View containing the content for the bottomsheet</td>
+</tr>
+<tr>
+<td>gestureEnabled</td>
+<td><code>true</code></td>
+<td><code>boolean</code></td>
+<td>Boolean setting if swipe gestures are enabled</td>
+</tr>
+<tr>
+<td>stepIndex</td>
+<td><code>0</code></td>
+<td><code>number</code></td>
+<td>the index of current step (mutable)</td>
+</tr>
+<tr>
+<td>steps</td>
+<td><code>[70]</code></td>
+<td><code>number[]</code></td>
+<td>the different available steps</td>
+</tr>
+<tr>
+<td>backdropColor</td>
+<td><code>new Color(&#39;rgba(0, 0, 0, 0.7)&#39;)</code></td>
+<td><code>Color</code></td>
+<td>The color of the backdrop behind the drawer</td>
+</tr>
+</tbody></table>
+
+<a href="#methods" id="methods" style="color: inherit; text-decoration: none;">
+  <h3>Methods</h3>
+</a>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Return</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>install()</td>
+<td><code>void</code></td>
+<td>Install gestures</td>
+</tr>
+</tbody></table>
+<p><a href="#usage-in-angular"></a></p>
+<p><a href="#usage-in-angular"></a></p>
+
+<a href="#usage-in-angular" id="usage-in-angular" style="color: inherit; text-decoration: none;">
+  <h2>Usage in Angular</h2>
+</a>
+<p>Import the module into your project.</p>
+<pre><code class="language-typescript"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">PBSModule</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;@nativescript-community/ui-persistent-bottomsheet/angular&quot;</span><span class="hl-1">;</span><br/><br/><span class="hl-1">@</span><span class="hl-4">NgModule</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-2">imports:</span><span class="hl-1"> [</span><br/><span class="hl-1">        </span><span class="hl-2">PBSModule</span><br/><span class="hl-1">    ]</span><br/><span class="hl-1">    </span><span class="hl-2">schemas</span><span class="hl-1">: [</span><br/><span class="hl-1">        </span><span class="hl-5">NO_ERRORS_SCHEMA</span><br/><span class="hl-1">    ]</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-0">export</span><span class="hl-1"> </span><span class="hl-6">class</span><span class="hl-1"> </span><span class="hl-7">AppModule</span><span class="hl-1"> { }</span>
+</code></pre>
+<p>Then in your component add the following:</p>
+<pre><code class="language-xml"><span class="hl-8">&lt;</span><span class="hl-9">BottomSheet</span><span class="hl-8">&gt;</span><br/><span class="hl-1">    </span><span class="hl-8">&lt;</span><span class="hl-9">StackLayout</span><span class="hl-1"> </span><span class="hl-10">backgroundColor</span><span class="hl-1">=</span><span class="hl-11">&quot;white&quot;</span><span class="hl-8">&gt;</span><br/><span class="hl-1">      </span><span class="hl-8">&lt;</span><span class="hl-9">Label</span><span class="hl-1"> </span><span class="hl-10">text</span><span class="hl-1">=</span><span class="hl-11">&quot;This is the main content&quot;</span><span class="hl-8">&gt;&lt;/</span><span class="hl-9">Label</span><span class="hl-8">&gt;</span><br/><span class="hl-1">    </span><span class="hl-8">&lt;/</span><span class="hl-9">StackLayout</span><span class="hl-8">&gt;</span><br/><span class="hl-1">    </span><span class="hl-8">&lt;</span><span class="hl-9">GridLayout</span><span class="hl-1"> bottomSheet </span><span class="hl-10">backgroundColor</span><span class="hl-1">=</span><span class="hl-11">&quot;white&quot;</span><span class="hl-1"> </span><span class="hl-10">height</span><span class="hl-1">=</span><span class="hl-11">&quot;70&quot;</span><span class="hl-8">&gt;</span><br/><span class="hl-1">      </span><span class="hl-8">&lt;</span><span class="hl-9">Label</span><span class="hl-1"> </span><span class="hl-10">text</span><span class="hl-1">=</span><span class="hl-11">&quot;This is the side drawer content&quot;</span><span class="hl-8">&gt;&lt;/</span><span class="hl-9">Label</span><span class="hl-8">&gt;</span><br/><span class="hl-1">    </span><span class="hl-8">&lt;/</span><span class="hl-9">GridLayout</span><span class="hl-8">&gt;</span><br/><br/><span class="hl-1">   </span><br/><span class="hl-8">&lt;/</span><span class="hl-9">BottomSheet</span><span class="hl-8">&gt;</span>
+</code></pre>
+<p>For a more complete example, look in the <code>demo-ng</code> directory.</p>
+<p><a href="#usage-in-vue"></a></p>
+<p><a href="#usage-in-vue"></a></p>
+
+<a href="#usage-in-vue" id="usage-in-vue" style="color: inherit; text-decoration: none;">
+  <h2>Usage in Vue</h2>
+</a>
+<p>Register the plugin in your <code>app.js</code>.</p>
+<pre><code class="language-typescript"><span class="hl-0">import</span><span class="hl-1"> </span><span class="hl-2">BottomSheetPlugin</span><span class="hl-1"> </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;~/components/drawer/vue&#39;</span><span class="hl-1">;</span><br/><span class="hl-2">Vue</span><span class="hl-1">.</span><span class="hl-4">use</span><span class="hl-1">(</span><span class="hl-2">BottomSheetPlugin</span><span class="hl-1">);</span>
+</code></pre>
+<p>Add this at the top of your webpack config file:</p>
+<pre><code class="language-javascript"><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-5">NsVueTemplateCompiler</span><span class="hl-1"> = </span><span class="hl-4">require</span><span class="hl-1">(</span><span class="hl-3">&#39;nativescript-vue-template-compiler&#39;</span><span class="hl-1">);</span><br/><br/><span class="hl-2">NsVueTemplateCompiler</span><span class="hl-1">.</span><span class="hl-4">registerElement</span><span class="hl-1">(</span><span class="hl-3">&#39;BottomSheet&#39;</span><span class="hl-1">, () </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-4">require</span><span class="hl-1">(</span><span class="hl-3">&#39;@nativescript-community/ui-persistent-bottomsheet&#39;</span><span class="hl-1">).</span><span class="hl-2">BottomSheet</span><span class="hl-1">, {</span><br/><span class="hl-1">    </span><span class="hl-2">model:</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-2">prop:</span><span class="hl-1"> </span><span class="hl-3">&#39;stepIndex&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">        </span><span class="hl-2">event:</span><span class="hl-1"> </span><span class="hl-3">&#39;stepIndexChange&#39;</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">});</span>
+</code></pre>
+<p>Then in your component add the following:</p>
+<pre><code class="language-xml"><span class="hl-8">&lt;</span><span class="hl-9">BottomSheet</span><span class="hl-8">&gt;</span><br/><span class="hl-1">    </span><span class="hl-8">&lt;</span><span class="hl-9">StackLayout</span><span class="hl-1"> </span><span class="hl-10">backgroundColor</span><span class="hl-1">=</span><span class="hl-11">&quot;white&quot;</span><span class="hl-8">&gt;</span><br/><span class="hl-1">      </span><span class="hl-8">&lt;</span><span class="hl-9">Label</span><span class="hl-1"> </span><span class="hl-10">text</span><span class="hl-1">=</span><span class="hl-11">&quot;This is the main content&quot;</span><span class="hl-1"> </span><span class="hl-8">/&gt;</span><br/><span class="hl-1">    </span><span class="hl-8">&lt;/</span><span class="hl-9">StackLayout</span><span class="hl-8">&gt;</span><br/><span class="hl-1">    </span><span class="hl-8">&lt;</span><span class="hl-9">GridLayout</span><span class="hl-1"> ~bottomSheet </span><span class="hl-10">backgroundColor</span><span class="hl-1">=</span><span class="hl-11">&quot;white&quot;</span><span class="hl-1"> </span><span class="hl-10">height</span><span class="hl-1">=</span><span class="hl-11">&quot;70&quot;</span><span class="hl-8">&gt;</span><br/><span class="hl-1">      </span><span class="hl-8">&lt;</span><span class="hl-9">Label</span><span class="hl-1"> </span><span class="hl-10">text</span><span class="hl-1">=</span><span class="hl-11">&quot;This is the side drawer content&quot;</span><span class="hl-1"> </span><span class="hl-8">/&gt;</span><br/><span class="hl-1">    </span><span class="hl-8">&lt;/</span><span class="hl-9">GridLayout</span><span class="hl-8">&gt;</span><br/><br/><span class="hl-8">&lt;/</span><span class="hl-9">BottomSheet</span><span class="hl-8">&gt;</span>
+</code></pre>
+<p>For a more complete example, look in the <code>demo-vue</code> directory.</p>
+<p><a href="#usage-in-svelte"></a></p>
+<p><a href="#usage-in-svelte"></a></p>
+
+<a href="#usage-in-svelte" id="usage-in-svelte" style="color: inherit; text-decoration: none;">
+  <h2>Usage in Svelte</h2>
+</a>
+<p>Register the plugin in your <code>app.ts</code>.</p>
+<pre><code class="language-typescript"><span class="hl-0">import</span><span class="hl-1"> </span><span class="hl-2">BottomSheetElement</span><span class="hl-1"> </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;@nativescript-community/ui-persistent-bottomsheet/svelte&#39;</span><span class="hl-1">;</span><br/><span class="hl-2">BottomSheetElement</span><span class="hl-1">.</span><span class="hl-4">register</span><span class="hl-1">();</span>
+</code></pre>
+<p>Then in your component, add the following:</p>
+<pre><code class="language-xml"><span class="hl-8">&lt;</span><span class="hl-9">bottomsheet</span><span class="hl-8">&gt;</span><br/><span class="hl-1">    </span><span class="hl-8">&lt;</span><span class="hl-9">stacklayout</span><span class="hl-1">  </span><span class="hl-10">backgroundColor</span><span class="hl-1">=</span><span class="hl-11">&quot;white&quot;</span><span class="hl-8">&gt;</span><br/><span class="hl-1">      </span><span class="hl-8">&lt;</span><span class="hl-9">Label</span><span class="hl-1"> </span><span class="hl-10">text</span><span class="hl-1">=</span><span class="hl-11">&quot;This is the main content&quot;</span><span class="hl-1"> </span><span class="hl-8">/&gt;</span><br/><span class="hl-1">    </span><span class="hl-8">&lt;/</span><span class="hl-9">stacklayout</span><span class="hl-8">&gt;</span><br/><span class="hl-1">    </span><span class="hl-8">&lt;</span><span class="hl-9">gridlayout</span><span class="hl-1"> prop:bottomSheet </span><span class="hl-10">backgroundColor</span><span class="hl-1">=</span><span class="hl-11">&quot;white&quot;</span><span class="hl-1"> </span><span class="hl-10">height</span><span class="hl-1">=</span><span class="hl-11">&quot;70&quot;</span><span class="hl-8">&gt;</span><br/><span class="hl-1">      </span><span class="hl-8">&lt;</span><span class="hl-9">Label</span><span class="hl-1"> </span><span class="hl-10">text</span><span class="hl-1">=</span><span class="hl-11">&quot;This is the side drawer content&quot;</span><span class="hl-1"> </span><span class="hl-8">/&gt;</span><br/><span class="hl-1">    </span><span class="hl-8">&lt;/</span><span class="hl-9">gridlayout</span><span class="hl-8">&gt;</span><br/><br/><span class="hl-8">&lt;/</span><span class="hl-9">bottomsheet</span><span class="hl-8">&gt;</span>
+</code></pre>
+<p>For a more complete example, look in the <code>demo-svelte</code> directory.</p>
+<p><a href="#usage-in-react"></a></p>
+<p><a href="#usage-in-react"></a></p>
+
+<a href="#usage-in-react" id="usage-in-react" style="color: inherit; text-decoration: none;">
+  <h2>Usage in React</h2>
+</a>
+<p>Register the plugin in your <code>app.ts</code>.</p>
+<pre><code class="language-typescript"><span class="hl-0">import</span><span class="hl-1"> </span><span class="hl-2">BottomSheetElement</span><span class="hl-1"> </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&#39;@nativescript-community/ui-persistent-bottomsheet/react&#39;</span><span class="hl-1">;</span><br/><span class="hl-2">BottomSheetElement</span><span class="hl-1">.</span><span class="hl-4">register</span><span class="hl-1">();</span>
+</code></pre>
+<p>Then in your component, add the following:</p>
+<pre><code class="language-ts"><span class="hl-0">import</span><span class="hl-1"> { </span><span class="hl-2">BottomSheet</span><span class="hl-1"> } </span><span class="hl-0">from</span><span class="hl-1"> </span><span class="hl-3">&quot;@nativescript-community/ui-persistent-bottomsheet/react&quot;</span>
+</code></pre>
+<pre><code class="language-xml"><span class="hl-8">&lt;</span><span class="hl-9">BottomSheet</span><span class="hl-8">&gt;</span><br/><span class="hl-1">  </span><span class="hl-8">&lt;</span><span class="hl-9">stackLayout</span><span class="hl-1"> </span><span class="hl-10">backgroundColor</span><span class="hl-1">=</span><span class="hl-11">&quot;white&quot;</span><span class="hl-8">&gt;</span><br/><span class="hl-1">    </span><span class="hl-8">&lt;</span><span class="hl-9">label</span><span class="hl-1"> </span><span class="hl-10">text</span><span class="hl-1">=</span><span class="hl-11">&quot;This is the main content&quot;</span><span class="hl-1"> </span><span class="hl-8">/&gt;</span><br/><span class="hl-1">  </span><span class="hl-8">&lt;/</span><span class="hl-9">stackLayout</span><span class="hl-8">&gt;</span><br/><span class="hl-1">  </span><span class="hl-8">&lt;</span><span class="hl-9">gridLayout</span><span class="hl-1"> </span><span class="hl-10">nodeRole</span><span class="hl-1">=</span><span class="hl-11">&quot;bottomSheet&quot;</span><span class="hl-1"> </span><span class="hl-10">backgroundColor</span><span class="hl-1">=</span><span class="hl-11">&quot;white&quot;</span><span class="hl-1"> </span><span class="hl-10">height</span><span class="hl-1">=</span><span class="hl-11">&quot;70&quot;</span><span class="hl-8">&gt;</span><br/><span class="hl-1">    </span><span class="hl-8">&lt;</span><span class="hl-9">label</span><span class="hl-1"> </span><span class="hl-10">text</span><span class="hl-1">=</span><span class="hl-11">&quot;This is the side drawer content&quot;</span><span class="hl-1"> </span><span class="hl-8">/&gt;</span><br/><span class="hl-1">  </span><span class="hl-8">&lt;/</span><span class="hl-9">gridLayout</span><span class="hl-8">&gt;</span><br/><br/><span class="hl-8">&lt;/</span><span class="hl-9">BottomSheet</span><span class="hl-8">&gt;</span>
+</code></pre>
+<p>For a more complete example, look in the <code>demo-react</code> directory.</p>
+<p><a href="#demos"></a></p>
+<p><a href="#demos"></a></p>
+
+<a href="#demos" id="demos" style="color: inherit; text-decoration: none;">
+  <h2>Demos</h2>
+</a>
+<p>This repository includes Angular, Vue.js, and Svelte demos. In order to run these execute the following in your shell:</p>
+<pre><code class="language-shell"><span class="hl-1">$ git clone https://github.com/@nativescript-community/ui-persistent-bottomsheet</span><br/><span class="hl-1">$ </span><span class="hl-4">cd</span><span class="hl-1"> ui-drawer</span><br/><span class="hl-1">$ npm run i</span><br/><span class="hl-1">$ npm run setup</span><br/><span class="hl-1">$ npm run build &amp;&amp; npm run build.angular</span><br/><span class="hl-1">$ </span><span class="hl-4">cd</span><span class="hl-1"> demo-ng </span><span class="hl-12"># or demo-vue or demo-svelte or demo-react</span><br/><span class="hl-1">$ ns run ios|android</span>
+</code></pre>
+<p><a href="#demos-and-development"></a></p>
+<p><a href="#demos-and-development"></a></p>
+
+<a href="#demos-and-development" id="demos-and-development" style="color: inherit; text-decoration: none;">
+  <h2>Demos and Development</h2>
+</a>
+
+<a href="#repo-setup" id="repo-setup" style="color: inherit; text-decoration: none;">
+  <h3>Repo Setup</h3>
+</a>
+<p>The repo uses submodules. If you did not clone with <code> --recursive</code> then you need to call</p>
+<pre><code><span class="hl-2">git</span><span class="hl-1"> </span><span class="hl-2">submodule</span><span class="hl-1"> </span><span class="hl-2">update</span><span class="hl-1"> --</span><span class="hl-2">init</span>
+</code></pre>
+<p>The package manager used to install and link dependencies must be <code>pnpm</code> or <code>yarn</code>. <code>npm</code> wont work.</p>
+<p>To develop and test:
+if you use <code>yarn</code> then run <code>yarn</code>
+if you use <code>pnpm</code> then run <code>pnpm i</code></p>
+<p><strong>Interactive Menu:</strong></p>
+<p>To start the interactive menu, run <code>npm start</code> (or <code>yarn start</code> or <code>pnpm start</code>). This will list all of the commonly used scripts.</p>
+
+<a href="#build" id="build" style="color: inherit; text-decoration: none;">
+  <h3>Build</h3>
+</a>
+<pre><code class="language-bash"><span class="hl-1">npm run build.all</span>
+</code></pre>
+
+<a href="#demos-1" id="demos-1" style="color: inherit; text-decoration: none;">
+  <h3>Demos</h3>
+</a>
+<pre><code class="language-bash"><span class="hl-1">npm run demo.[ng|react|svelte|vue].[ios|android]</span><br/><br/><span class="hl-1">npm run demo.svelte.ios </span><span class="hl-12"># Example</span>
+</code></pre>
+<p><a href="#contributing"></a></p>
+<p><a href="#contributing"></a></p>
+
+<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
+  <h2>Contributing</h2>
+</a>
+
+<a href="#update-repo" id="update-repo" style="color: inherit; text-decoration: none;">
+  <h3>Update repo</h3>
+</a>
+<p>You can update the repo files quite easily</p>
+<p>First update the submodules</p>
+<pre><code class="language-bash"><span class="hl-1">npm run update</span>
+</code></pre>
+<p>Then commit the changes
+Then update common files</p>
+<pre><code class="language-bash"><span class="hl-1">npm run sync</span>
+</code></pre>
+<p>Then you can run <code>yarn|pnpm</code>, commit changed files if any</p>
+
+<a href="#update-readme" id="update-readme" style="color: inherit; text-decoration: none;">
+  <h3>Update readme</h3>
+</a>
+<pre><code class="language-bash"><span class="hl-1">npm run readme</span>
+</code></pre>
+
+<a href="#update-doc" id="update-doc" style="color: inherit; text-decoration: none;">
+  <h3>Update doc</h3>
+</a>
+<pre><code class="language-bash"><span class="hl-1">npm run doc</span>
+</code></pre>
+
+<a href="#publish" id="publish" style="color: inherit; text-decoration: none;">
+  <h3>Publish</h3>
+</a>
+<p>The publishing is completely handled by <code>lerna</code> (you can add <code>-- --bump major</code> to force a major release)
+Simply run </p>
+<pre><code class="language-shell"><span class="hl-1">npm run publish</span>
+</code></pre>
+<p><a href="#questions"></a></p>
+<p><a href="#questions"></a></p>
+
+<a href="#questions" id="questions" style="color: inherit; text-decoration: none;">
+  <h2>Questions</h2>
+</a>
+<p>If you have any questions/issues/comments please feel free to create an issue or start a conversation in the <a href="https://nativescript.org/discord">NativeScript Community Discord</a>.</p>
+</div></div>
+<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility">
+<h4 class="uppercase">Member Visibility</h4><form>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li></ul></form></div>
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<nav class="tsd-navigation primary">
+<details class="tsd-index-accordion" open><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Modules</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li class="current selected"><a href="modules.html">@nativescript-<wbr/>community/ui-<wbr/>persistent-<wbr/>bottomsheet</a>
+<ul></ul></li></ul></div></details></nav>
+<nav class="tsd-navigation secondary menu-sticky"></nav></div></div>
 <div class="container tsd-generator">
-	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
-</div>
-<div class="overlay"></div>
-<script src="assets/js/main.js"></script>
-</body>
-</html>
+<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
+<div class="overlay"></div><script src="assets/main.js"></script></body></html>
