@@ -3,7 +3,7 @@
     "private": true,
     "version": "0.0.1",
     "dependencies": {
-        "@nativescript-community/gesturehandler": "^2.0.8",
-        "@nativescript-community/ui-persistent-bottomsheet": "0.0.24"
+        "@nativescript-community/gesturehandler": "^2.0.10",
+        "@nativescript-community/ui-persistent-bottomsheet": "*"
     }
 }
