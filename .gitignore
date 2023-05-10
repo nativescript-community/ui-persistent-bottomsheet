@@ -25,6 +25,8 @@ yarn-error.log*
 .project
 .yarn
 tmp/
+package-lock.json
+yarn.lock
 
 !.eslintrc.js
 !.prettierrc.js
@@ -52,5 +54,6 @@ packages/*.ngsummary.json
 packages/*.metadata.json
 packages/angular
 packages/typings
+pnpm-lock.yaml
 
 /blueprint.md
