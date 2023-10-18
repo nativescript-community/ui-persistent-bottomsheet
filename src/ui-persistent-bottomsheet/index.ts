@@ -144,7 +144,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             return false;
         }
         let deltaY = 0;
-        if (global.isIOS && !this.iosIgnoreSafeArea) {
+        if (__IOS__ && !this.iosIgnoreSafeArea) {
             deltaY -= Utils.layout.toDeviceIndependentPixels(this.getSafeAreaInsets().top);
         }
         const y = data.y + deltaY;
@@ -247,7 +247,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         this._scrollView = value;
 
         if (value) {
-            // if (global.isIOS) {
+            // if (__IOS__) {
             //     (value.nativeViewProtected as UIScrollView).delaysContentTouches = true;
             // }
             value.on('scroll', this.onScroll, this);
@@ -353,14 +353,14 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         }
     }
     private get scrollViewVerticalOffset() {
-        if (global.isAndroid) {
+        if (__ANDROID__) {
             return (this.scrollView.nativeViewProtected as androidx.core.view.ScrollingView).computeVerticalScrollOffset() / Utils.layout.getDisplayDensity();
         } else {
             return (this.scrollView.nativeViewProtected as UIScrollView).contentOffset.y;
         }
     }
     private set scrollViewVerticalOffset(value: number) {
-        if (global.isAndroid) {
+        if (__ANDROID__) {
             (this.scrollView.nativeViewProtected as androidx.recyclerview.widget.RecyclerView).scrollTo(0, 0);
         } else {
             (this.scrollView.nativeViewProtected as UIScrollView).contentOffset = CGPointMake(this.scrollView.nativeViewProtected.contentOffset.x, 0);
@@ -381,9 +381,9 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         let touchY;
         // touch event gives you relative touch which varies with translateY
         // so we use touch location in the window
-        if (global.isAndroid) {
+        if (__ANDROID__) {
             touchY = Utils.layout.toDeviceIndependentPixels((event.android as android.view.MotionEvent).getRawY());
-        } else if (global.isIOS) {
+        } else if (__IOS__) {
             touchY = (event.ios.touches.anyObject() as UITouch).locationInView(null).y;
         }
         if (event.action === 'down') {
@@ -506,7 +506,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             return;
         }
         this.animating = true;
-        if (this._scrollView && global.isAndroid) {
+        if (this._scrollView && __ANDROID__) {
             // on android we get unwanted scroll effect while "swipping the view"
             // cancel the views touches before animation to prevent that
             const time = Date.now();
