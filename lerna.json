@@ -1,16 +1,37 @@
 {
+    "version": "0.0.26",
     "packages": [
         "packages/*"
     ],
-    "version": "0.0.26",
     "npmClient": "yarn",
     "useWorkspaces": true,
     "command": {
         "publish": {
             "conventionalCommits": true,
+            "conventionalBlacklist": [
+                "chore"
+            ],
+            "changelogPreset": "angular",
+            "createRelease": "github",
+            "commitHooks": false,
+            "private": false,
             "ignoreChanges": [
-                "ignored-file",
-                "*.md"
+                "*.md",
+                "docs/**"
+            ]
+        },
+        "version": {
+            "conventionalCommits": true,
+            "conventionalBlacklist": [
+                "chore"
+            ],
+            "changelogPreset": "angular",
+            "createRelease": "github",
+            "commitHooks": false,
+            "private": false,
+            "ignoreChanges": [
+                "*.md",
+                "docs/**"
             ]
         },
         "bootstrap": {
