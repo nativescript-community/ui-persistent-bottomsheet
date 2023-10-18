@@ -269,8 +269,16 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             this.scrollView = null;
         }
     }
-
+    addChild(child) {
+        if (child === this.bottomSheet) {
+            return;
+        }
+        super.addChild(child);
+    }
     _onBottomSheetChanged(oldValue: View, newValue: View) {
+        if (oldValue === newValue) {
+            return;
+        }
         if (oldValue) {
             this.removeChild(oldValue);
         }
