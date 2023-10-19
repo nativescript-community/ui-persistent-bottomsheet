@@ -269,8 +269,9 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             this.scrollView = null;
         }
     }
+    allowBottomSheetAdd = false
     addChild(child) {
-        if (child === this.bottomSheet) {
+        if (child === this.bottomSheet && !this.allowBottomSheetAdd)  {
             return;
         }
         super.addChild(child);
@@ -299,7 +300,9 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             let index;
             if (!newValue.parent) {
                 index = this.getChildrenCount();
+                this.allowBottomSheetAdd = true;
                 this.addChild(newValue);
+                this.allowBottomSheetAdd = false;
             } else {
                 index = this.getChildIndex(newValue);
             }
