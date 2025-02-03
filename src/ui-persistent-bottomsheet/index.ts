@@ -554,6 +554,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             this.isScrollEnabled = true;
             this.animating = false;
             this.animation = null;
+            this.notify({ eventName: 'animated', position, duration });
         }
     }
 }
