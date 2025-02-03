@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.30](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.29...v0.0.30) (2025-02-03)
+
+### Bug Fixes
+
+* send `animated` once the step is finish animating ([3c25d95](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/3c25d95042d8f10c2f18b42446a91315f1269ea1))
+
 ## [0.0.29](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.28...v0.0.29) (2023-10-19)
 
 **Note:** Version bump only for package ui-persistent-bottomsheet
