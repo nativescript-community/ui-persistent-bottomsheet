@@ -64,10 +64,6 @@ export const gestureEnabledProperty = new Property<PersistentBottomSheet, boolea
     defaultValue: true,
     valueConverter: booleanConverter
 });
-export const stepsProperty = new Property<PersistentBottomSheet, number[]>({
-    name: 'steps',
-    defaultValue: [70]
-});
 export const stepIndexProperty = new Property<PersistentBottomSheet, number>({
     name: 'stepIndex',
     defaultValue: 0
@@ -109,6 +105,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
 
     private animation: Animation;
 
+    private _allowBottomSheetAdd = false;
+
     constructor() {
         super();
         this.isPassThroughParentEnabled = true;
@@ -121,6 +119,10 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     }
     set steps(value: number[]) {
         this._steps = value;
+
+        if (this._steps?.length) {
+            this.alignToStepPosition();
+        }
     }
 
     // nativeGestureHandler: PanGestureHandler;
@@ -269,9 +271,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             this.scrollView = null;
         }
     }
-    allowBottomSheetAdd = false
     addChild(child) {
-        if (child === this.bottomSheet && !this.allowBottomSheetAdd)  {
+        if (child === this.bottomSheet && !this._allowBottomSheetAdd) {
             return;
         }
         super.addChild(child);
@@ -300,9 +301,9 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             let index;
             if (!newValue.parent) {
                 index = this.getChildrenCount();
-                this.allowBottomSheetAdd = true;
+                this._allowBottomSheetAdd = true;
                 this.addChild(newValue);
-                this.allowBottomSheetAdd = false;
+                this._allowBottomSheetAdd = false;
             } else {
                 index = this.getChildIndex(newValue);
             }
@@ -336,6 +337,19 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             }
         };
     }
+    private alignToStepPosition() {
+        if (!this.bottomSheet) {
+            return;
+        }
+
+        const steps = this.steps;
+        const step = steps[Math.min(this.stepIndex, steps.length - 1)];
+        const ty = step;
+
+        this.translationY = -ty;
+        const data = this.computeTranslationData();
+        this.applyTrData(data);
+    }
     private onLayoutChange(event: EventData) {
         const contentView = event.object as GridLayout;
         const height = Math.round(Utils.layout.toDeviceIndependentPixels(contentView.getMeasuredHeight()));
@@ -346,13 +360,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 value: contentView.getMeasuredHeight()
             };
         }
-        if (this.translationY === -1 && this.bottomSheet) {
-            const steps = this.steps;
-            const step = steps[this.stepIndex];
-            const ty = step;
-            this.translationY = -ty;
-            const data = this.computeTranslationData();
-            this.applyTrData(data);
+        if (this.translationY === -1) {
+            this.alignToStepPosition();
         }
     }
     private get scrollViewVerticalOffset() {
