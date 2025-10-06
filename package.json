@@ -48,7 +48,7 @@
         ]
     },
     "dependencies": {
-        "@nativescript-community/plugin-seed-tools": "file:tools",
+        "@nativescript-community/plugin-seed-tools": "portal:tools",
         "@nativescript-community/template-snippet": "file:demo-snippets"
     },
     "ntl": {
@@ -77,5 +77,6 @@
     "workspaces": [
         "packages/*",
         "demo*"
-    ]
+    ],
+    "packageManager": "yarn@4.10.2"
 }
