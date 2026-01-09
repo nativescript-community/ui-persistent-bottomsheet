@@ -17,7 +17,8 @@ export interface ItemEventArgs {
  */
 @Component({
     selector: 'BottomSheet',
-    template: '<ng-content></ng-content>'
+    template: '<ng-content></ng-content>',
+    standalone: false
 })
 export class BottomSheetComponent {
     public pbs: PersistentBottomSheet;
@@ -83,7 +84,8 @@ export class BottomSheetComponent {
  * Directive identifying the left drawer
  */
 @Directive({
-    selector: '[bottomSheet]'
+    selector: '[bottomSheet]',
+    standalone: false
 })
 export class BottomSheetDirective {
     constructor(@Inject(ElementRef) private _elementRef: ElementRef) {
