@@ -20,7 +20,6 @@ import {
     EventData,
     GridLayout,
     Property,
-    ScrollEventData,
     ScrollView,
     TouchGestureEventData,
     Utils,
@@ -94,14 +93,14 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     private viewHeight = 0;
     // private bottomViewHeight = 0;
 
-    private lastScrollY: number;
     private lastTouchY: number;
-    private scrollViewTouched = false;
+    private touchStartY: number;
+    private wasDraggingPanel = false;
+    private gestureModeDecided = false;
     private _translationY = -1;
     public gestureEnabled = true;
     private _scrollView: ScrollView;
     private _isScrollEnabled = true;
-    private scrollViewAtTop: boolean = true;
 
     private animation: Animation;
 
@@ -177,8 +176,14 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     initNativeView() {
         super.initNativeView();
         if (this.scrollView) {
-            this.scrollView.on('scroll', this.onScroll, this);
             this.scrollView.on('touch', this.onTouch, this);
+        }
+        // On Android, also listen to touch events on bottomSheet to detect gestures that start
+        // on tap-enabled elements (buttons, etc.). On iOS, attaching a touch listener to the
+        // bottomSheet container would intercept and block tap events on child elements, so we
+        // only listen to scrollView events which is sufficient for iOS gesture handling.
+        if (__ANDROID__ && this.bottomSheet) {
+            this.bottomSheet.on('touch', this.onTouch, this);
         }
         if (this.gestureEnabled) {
             this.initGestures();
@@ -187,8 +192,10 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     disposeNativeView() {
         // this.off('layoutChanged', this.onLayoutChange, this);
         if (this.scrollView) {
-            this.scrollView.off('scroll', this.onScroll, this);
             this.scrollView.off('touch', this.onTouch, this);
+        }
+        if (__ANDROID__ && this.bottomSheet) {
+            this.bottomSheet.off('touch', this.onTouch, this);
         }
         super.disposeNativeView();
         if (this.panGestureHandler) {
@@ -243,7 +250,6 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             return;
         }
         if (this._scrollView) {
-            this.scrollView.off('scroll', this.onScroll, this);
             this.scrollView.off('touch', this.onTouch, this);
         }
         this._scrollView = value;
@@ -252,7 +258,6 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             // if (__IOS__) {
             //     (value.nativeViewProtected as UIScrollView).delaysContentTouches = true;
             // }
-            value.on('scroll', this.onScroll, this);
             value.on('touch', this.onTouch, this);
         }
     }
@@ -399,54 +404,101 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             touchY = (event.ios.touches.anyObject() as UITouch).locationInView(null).y;
         }
         if (event.action === 'down') {
+            this.touchStartY = touchY;
+            this.wasDraggingPanel = false;
+            this.gestureModeDecided = false;
         } else if (event.action === 'up' || event.action === 'cancel') {
-            if (this.scrollViewTouched) {
-                this.scrollViewTouched = false;
-                if (this.scrollViewAtTop) {
-                    this.scrollViewAtTop = this.scrollView.verticalOffset === 0;
-                    const y = touchY - (this.lastTouchY || touchY);
-                    const totalDelta = this.translationY + y;
-                    this.computeAndAnimateEndGestureAnimation(-totalDelta);
-                }
+            // If we were dragging the panel, animate to nearest step
+            // BUT: ignore 'cancel' events from tap handlers (they shouldn't trigger animation)
+            if (this.wasDraggingPanel && event.action === 'up') {
+                const y = touchY - (this.lastTouchY || touchY);
+                const totalDelta = this.translationY + y;
+                this.computeAndAnimateEndGestureAnimation(-totalDelta);
+                this.wasDraggingPanel = false;
             }
+
             this.isScrollEnabled = true;
-        } else if ((!this.scrollViewTouched || this.scrollViewAtTop) && event.action === 'move') {
-            if (!this.scrollViewTouched) {
-                // on android sometimes we dont get the down event but we get move events
-                // so let init here if necessary
-                this.scrollViewTouched = true;
-                this.lastScrollY = this.scrollViewVerticalOffset;
-                this.scrollViewAtTop = this.lastScrollY === 0;
-                if (!this.scrollViewAtTop) {
-                    return;
+
+            // Only reset touchStartY on 'up', not on 'cancel' (@tap elements send cancel mid-gesture)
+            if (event.action === 'up') {
+                this.touchStartY = undefined;
+            }
+
+            // Reset dragging state on any end event
+            if (event.action === 'up' || event.action === 'cancel') {
+                this.wasDraggingPanel = false;
+            }
+        } else if (event.action === 'move') {
+            // On Android sometimes we don't get the down event but we get move events
+            // so initialize touchStartY if needed
+            if (this.touchStartY === undefined) {
+                this.touchStartY = touchY;
+                this.wasDraggingPanel = false;
+                this.gestureModeDecided = false;
+            }
+
+            const deltaY = touchY - this.touchStartY;
+            const absDeltaY = Math.abs(deltaY);
+
+            if (absDeltaY < SWIPE_DISTANCE_MINIMUM) {
+                // Movement too small - likely a tap
+                return;
+            }
+
+            // Check current scroll position
+            const currentScrollY = this._scrollView ? this.scrollViewVerticalOffset : 0;
+            const isAtTop = currentScrollY === 0;
+
+            // If not yet dragging panel, check if we should start (one-way transition)
+            if (!this.wasDraggingPanel) {
+                let shouldStartDraggingPanel = false;
+
+                if (deltaY > 0) {
+                    // Swiping DOWN - start dragging panel if reached top
+                    shouldStartDraggingPanel = isAtTop;
                 } else {
+                    // Swiping UP - start dragging panel if at top AND panel not fully expanded
+                    if (isAtTop) {
+                        const maxOffset = this.translationMaxOffset;
+                        const isPanelFullyExpanded = Math.abs(this.translationY + maxOffset) < 1;
+                        shouldStartDraggingPanel = !isPanelFullyExpanded;
+                    }
+                }
+
+                if (shouldStartDraggingPanel) {
+                    // Switch to panel dragging mode (one-way, won't switch back during this gesture)
+                    this.wasDraggingPanel = true;
+                    this.isScrollEnabled = false;
                     this.panGestureHandler.cancel();
+                } else {
+                    // Keep scrolling the list
+                    if (!this.gestureModeDecided) {
+                        this.gestureModeDecided = true;
+                        this.isScrollEnabled = true;
+                    }
                 }
             }
-            const y = touchY - (this.lastTouchY || touchY);
-            const trY = this.constrainY(this.translationY + y);
-            this.translationY = trY;
-            const trData = this.computeTranslationData();
-            this.applyTrData(trData);
+
+            // Execute the current mode
+            if (this.wasDraggingPanel) {
+                // Handle panel drag
+                const y = touchY - (this.lastTouchY || touchY);
+                const trY = this.constrainY(this.translationY + y);
+                this.translationY = trY;
+                const trData = this.computeTranslationData();
+                this.applyTrData(trData);
+            }
+            // else: let native scroll happen (do nothing)
         }
         this.lastTouchY = touchY;
     }
-    private onScroll(event: ScrollEventData & { scrollOffset?: number }) {
-        const scrollY = event.scrollOffset || event.scrollY || 0;
-        if (scrollY <= 0) {
-            this.scrollViewAtTop = true;
-            return;
-        } else {
-            const height = this.viewHeight;
-            if (this.translationY > height - this.translationMaxOffset) {
-                return;
-            } else {
-                this.scrollViewAtTop = false;
-            }
-        }
-        this.lastScrollY = scrollY;
-    }
+
     private onGestureState(args: GestureStateEventData) {
+        // Ignore pan gesture handler when we're manually dragging panel via onTouch
+        if (this.wasDraggingPanel) {
+            return;
+        }
+
         const { state, prevState, extraData, view } = args.data;
         if (prevState === GestureState.ACTIVE) {
             const { velocityY, translationY } = extraData;
@@ -476,6 +528,11 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         this.animateToPosition(destSnapPoint, Math.min(distance * 2, OPEN_DURATION));
     }
     private onGestureTouch(args: GestureTouchEventData) {
+        // Ignore pan gesture handler when we're manually dragging panel via onTouch
+        if (this.wasDraggingPanel) {
+            return;
+        }
+
         const data = args.data;
         if (data.state !== GestureState.ACTIVE) {
             return;
