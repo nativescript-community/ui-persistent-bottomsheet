@@ -255,9 +255,11 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         this._scrollView = value;
 
         if (value) {
-            // if (__IOS__) {
-            //     (value.nativeViewProtected as UIScrollView).delaysContentTouches = true;
-            // }
+            if (__IOS__) {
+                // Disable bounce effect to prevent scroll acceleration (2x speed issue)
+                // and to allow panel dragging when reaching scroll boundaries.
+                value.nativeViewProtected.bounces = false;
+            }
             value.on('touch', this.onTouch, this);
         }
     }
