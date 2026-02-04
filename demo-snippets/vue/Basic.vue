@@ -23,7 +23,7 @@
                     <button text="Support" class="button" />
                     <button text="Contact" class="button" />
                 </stacklayout>
-                <ListView :items="items" row="2" id="scrollView" colWidth="50%" rowHeight="100">
+                <CollectionView :items="items" row="2" id="scrollView" colWidth="50%" rowHeight="100">
                     <v-template>
                         <gridlayout rows="*, auto" :backgroundColor="item.color" class="item">
                             <stacklayout row="1">
@@ -32,7 +32,7 @@
                             </stacklayout>
                         </gridlayout>
                     </v-template>
-                </ListView>
+                </CollectionView>
             </gridlayout>
         </BottomSheet>
     </Page>

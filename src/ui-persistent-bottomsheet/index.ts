@@ -176,14 +176,14 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     initNativeView() {
         super.initNativeView();
         if (this.scrollView) {
-            this.scrollView.on('touch', this.onTouch, this);
+            this.scrollView.on('touch', this.onScrollViewTouch, this);
         }
         // On Android, also listen to touch events on bottomSheet to detect gestures that start
         // on tap-enabled elements (buttons, etc.). On iOS, attaching a touch listener to the
         // bottomSheet container would intercept and block tap events on child elements, so we
         // only listen to scrollView events which is sufficient for iOS gesture handling.
         if (__ANDROID__ && this.bottomSheet) {
-            this.bottomSheet.on('touch', this.onTouch, this);
+            this.bottomSheet.on('touch', this.onBottomSheetTouch, this);
         }
         if (this.gestureEnabled) {
             this.initGestures();
@@ -192,10 +192,10 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     disposeNativeView() {
         // this.off('layoutChanged', this.onLayoutChange, this);
         if (this.scrollView) {
-            this.scrollView.off('touch', this.onTouch, this);
+            this.scrollView.off('touch', this.onScrollViewTouch, this);
         }
         if (__ANDROID__ && this.bottomSheet) {
-            this.bottomSheet.off('touch', this.onTouch, this);
+            this.bottomSheet.off('touch', this.onBottomSheetTouch, this);
         }
         super.disposeNativeView();
         if (this.panGestureHandler) {
@@ -250,7 +250,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             return;
         }
         if (this._scrollView) {
-            this.scrollView.off('touch', this.onTouch, this);
+            this.scrollView.off('touch', this.onScrollViewTouch, this);
         }
         this._scrollView = value;
 
@@ -260,7 +260,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 // and to allow panel dragging when reaching scroll boundaries.
                 value.nativeViewProtected.bounces = false;
             }
-            value.on('touch', this.onTouch, this);
+            value.on('touch', this.onScrollViewTouch, this);
         }
     }
     private _onScrollViewIdChanged(oldValue: string, newValue: string) {
@@ -392,9 +392,25 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         if (this._isScrollEnabled !== value) {
             this._isScrollEnabled = value;
             if (this.scrollView) {
+                // this only works if the scrollView component supports isScrollEnabled
+                // otherwise the interaction wont be nice
                 this.scrollView.isScrollEnabled = value;
             }
         }
+    }
+    scrollViewTouched = false;
+    private onBottomSheetTouch(event: TouchGestureEventData) {
+        if (!this.scrollViewTouched) {
+            this.onTouch(event);
+        }
+    }
+    private onScrollViewTouch(event: TouchGestureEventData) {
+        if (event.action === 'up' || event.action === 'cancel') {
+            this.scrollViewTouched = false;
+        } else {
+            this.scrollViewTouched = true;
+        }
+        this.onTouch(event);
     }
     private onTouch(event: TouchGestureEventData) {
         let touchY;
@@ -422,14 +438,12 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             this.isScrollEnabled = true;
 
             // Only reset touchStartY on 'up', not on 'cancel' (@tap elements send cancel mid-gesture)
-            if (event.action === 'up') {
-                this.touchStartY = undefined;
-            }
+            // if (event.action === 'up') {
+            this.touchStartY = null;
+            // }
 
             // Reset dragging state on any end event
-            if (event.action === 'up' || event.action === 'cancel') {
-                this.wasDraggingPanel = false;
-            }
+            this.wasDraggingPanel = false;
         } else if (event.action === 'move') {
             // On Android sometimes we don't get the down event but we get move events
             // so initialize touchStartY if needed
@@ -478,6 +492,15 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                         this.gestureModeDecided = true;
                         this.isScrollEnabled = true;
                     }
+                }
+            } else {
+                const maxOffset = this.translationMaxOffset;
+                const isPanelFullyExpanded = Math.abs(this.translationY + maxOffset) < 1;
+                // if dragged to the top we can enable back scrolling
+                if (isPanelFullyExpanded) {
+                    this.wasDraggingPanel = false;
+                    this.gestureModeDecided = true;
+                    this.isScrollEnabled = true;
                 }
             }
 
