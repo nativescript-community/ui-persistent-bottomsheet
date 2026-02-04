@@ -150,7 +150,7 @@ For a more complete example, look in the `demo-ng` directory.
 Register the plugin in your `app.js`.
 
 ```typescript
-import BottomSheetPlugin from '~/components/drawer/vue';
+import BottomSheetPlugin from '@nativescript-community/ui-persistent-bottomsheet/vue';
 Vue.use(BottomSheetPlugin);
 ```
 
