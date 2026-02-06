@@ -558,13 +558,27 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         }
     }
 
+    canAnimateToStep(step: number) {
+        return true;
+    }
+
     private computeAndAnimateEndGestureAnimation(totalDelta: number) {
         const steps = this.steps;
         let stepIndex = 0;
+        for (let i = 0; i < steps.length; i++) {
+            if (!this.canAnimateToStep(i)) {
+                stepIndex++;
+            } else {
+                break;
+            }
+        }
         let destSnapPoint = steps[stepIndex];
         let distance = Math.abs(destSnapPoint - totalDelta);
-        for (let i = 0; i < steps.length; i++) {
+        for (let i = stepIndex; i < steps.length; i++) {
             const snapPoint = steps[i];
+            if (!this.canAnimateToStep(snapPoint)) {
+                continue;
+            }
             const distFromSnap = Math.abs(snapPoint - totalDelta);
             if (distFromSnap <= Math.abs(destSnapPoint - totalDelta)) {
                 destSnapPoint = snapPoint;
