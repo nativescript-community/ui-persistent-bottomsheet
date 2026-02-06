@@ -225,10 +225,10 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         }
     }
     [stepIndexProperty.setNative](value: number) {
-        // if (this.viewHeight !== 0) {
-        // we are layed out
-        this.animateToPosition(this.steps[value]);
-        // }
+        if (this.viewHeight !== 0) {
+            // we are layed out
+            this.animateToPosition(this.steps[value]);
+        }
     }
     [backdropColorProperty.setNative](value: Color) {
         if (!this.backDrop && this.bottomSheet) {
