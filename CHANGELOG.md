@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.2](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.1...v0.1.2) (2026-02-06)
+
+### Bug Fixes
+
+* velocity support when touching scrollView. Many other fixes around scrollView ([a44c7be](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/a44c7beb8d78c1dfbfb3c0f2a540d8d7e8c6b48e))
+
 ## [0.1.1](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.0...v0.1.1) (2026-02-04)
 
 ### Features
