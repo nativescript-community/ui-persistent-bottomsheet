@@ -26,6 +26,7 @@ import {
     View,
     booleanConverter
 } from '@nativescript/core';
+import { VelocityTracker } from './VelocityTracker';
 const OPEN_DURATION = 200;
 export let PAN_GESTURE_TAG = 12400;
 const SWIPE_DISTANCE_MINIMUM = 10;
@@ -106,10 +107,12 @@ export class PersistentBottomSheet extends AbsoluteLayout {
 
     private _allowBottomSheetAdd = false;
 
+    public dragToss = 0.05;
+
     constructor() {
         super();
         this.isPassThroughParentEnabled = true;
-        this.on('layoutChanged', this.onLayoutChange, this);
+        this.on('layoutChanged', this.onLayoutChanged, this);
     }
 
     get steps() {
@@ -127,6 +130,16 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     // nativeGestureHandler: PanGestureHandler;
     translationFunction?: (delta: number, max: number, progress: number) => { bottomSheet?: AnimationDefinition; backDrop?: AnimationDefinition };
     protected initGestures() {
+        if (this.scrollView) {
+            this.scrollView.on('touch', this.onScrollViewTouch, this);
+        }
+        // On Android, also listen to touch events on bottomSheet to detect gestures that start
+        // on tap-enabled elements (buttons, etc.). On iOS, attaching a touch listener to the
+        // bottomSheet container would intercept and block tap events on child elements, so we
+        // only listen to scrollView events which is sufficient for iOS gesture handling.
+        if (__ANDROID__ && this.bottomSheet) {
+            this.bottomSheet.on('touch', this.onBottomSheetTouch, this);
+        }
         const manager = Manager.getInstance();
         const options = { gestureId: PAN_GESTURE_TAG++, ...this.panGestureOptions };
         const gestureHandler = manager.createGestureHandler(HandlerType.PAN, options.gestureId, {
@@ -164,9 +177,11 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         return this._translationY;
     }
     set translationY(value: number) {
-        if (this._translationY !== -1) {
-            this.isScrollEnabled = value === 0;
-        }
+        // Do we still need this? it had some bad side effect
+        // where the scrollview would start with isScrollEnabled= false from alignToStepPosition
+        // if (this._translationY !== -1) {
+        //     this.isScrollEnabled = value === 0;
+        // }
         this._translationY = value;
     }
     get translationMaxOffset() {
@@ -175,16 +190,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     }
     initNativeView() {
         super.initNativeView();
-        if (this.scrollView) {
-            this.scrollView.on('touch', this.onScrollViewTouch, this);
-        }
-        // On Android, also listen to touch events on bottomSheet to detect gestures that start
-        // on tap-enabled elements (buttons, etc.). On iOS, attaching a touch listener to the
-        // bottomSheet container would intercept and block tap events on child elements, so we
-        // only listen to scrollView events which is sufficient for iOS gesture handling.
-        if (__ANDROID__ && this.bottomSheet) {
-            this.bottomSheet.on('touch', this.onBottomSheetTouch, this);
-        }
+
         if (this.gestureEnabled) {
             this.initGestures();
         }
@@ -260,7 +266,10 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 // and to allow panel dragging when reaching scroll boundaries.
                 value.nativeViewProtected.bounces = false;
             }
-            value.on('touch', this.onScrollViewTouch, this);
+            if (this.gestureEnabled) {
+                value.on('touch', this.onScrollViewTouch, this);
+            }
+            value.isScrollEnabled = this._isScrollEnabled;
         }
     }
     private _onScrollViewIdChanged(oldValue: string, newValue: string) {
@@ -350,14 +359,13 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         }
 
         const steps = this.steps;
-        const step = steps[Math.min(this.stepIndex, steps.length - 1)];
+        const step = steps[Math.min(this.stepIndex, steps.length - 1)] ?? 0;
         const ty = step;
-
         this.translationY = -ty;
         const data = this.computeTranslationData();
         this.applyTrData(data);
     }
-    private onLayoutChange(event: EventData) {
+    private onLayoutChanged(event: EventData) {
         const contentView = event.object as GridLayout;
         const height = Math.round(Utils.layout.toDeviceIndependentPixels(contentView.getMeasuredHeight()));
         this.viewHeight = height;
@@ -378,13 +386,13 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             return (this.scrollView.nativeViewProtected as UIScrollView).contentOffset.y;
         }
     }
-    private set scrollViewVerticalOffset(value: number) {
-        if (__ANDROID__) {
-            (this.scrollView.nativeViewProtected as androidx.recyclerview.widget.RecyclerView).scrollTo(0, 0);
-        } else {
-            (this.scrollView.nativeViewProtected as UIScrollView).contentOffset = CGPointMake(this.scrollView.nativeViewProtected.contentOffset.x, 0);
-        }
-    }
+    // private set scrollViewVerticalOffset(value: number) {
+    //     if (__ANDROID__) {
+    //         (this.scrollView.nativeViewProtected as androidx.recyclerview.widget.RecyclerView).scrollTo(0, 0);
+    //     } else {
+    //         (this.scrollView.nativeViewProtected as UIScrollView).contentOffset = CGPointMake(this.scrollView.nativeViewProtected.contentOffset.x, 0);
+    //     }
+    // }
     get isScrollEnabled() {
         return this._isScrollEnabled;
     }
@@ -412,6 +420,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         }
         this.onTouch(event);
     }
+    vt: VelocityTracker | null = null;
     private onTouch(event: TouchGestureEventData) {
         let touchY;
         // touch event gives you relative touch which varies with translateY
@@ -421,16 +430,24 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         } else if (__IOS__) {
             touchY = (event.ios.touches.anyObject() as UITouch).locationInView(null).y;
         }
+        const p = event.getActivePointers()[0];
         if (event.action === 'down') {
+            this.vt = VelocityTracker.obtain();
+            this.vt.addMovement(p.getX(), p.getY());
+            this.lastTouchY = null;
             this.touchStartY = touchY;
             this.wasDraggingPanel = false;
             this.gestureModeDecided = false;
         } else if (event.action === 'up' || event.action === 'cancel') {
+            this.vt?.addMovement(p.getX(), p.getY());
             // If we were dragging the panel, animate to nearest step
             // BUT: ignore 'cancel' events from tap handlers (they shouldn't trigger animation)
             if (this.wasDraggingPanel && event.action === 'up') {
+                this.vt?.computeCurrentVelocity(1000);
+                const velocityY = -(this.vt?.getYVelocity() ?? 0);
+                this.vt?.recycle();
                 const y = touchY - (this.lastTouchY || touchY);
-                const totalDelta = this.translationY + y;
+                const totalDelta = this.translationY + y + this.dragToss * velocityY;
                 this.computeAndAnimateEndGestureAnimation(-totalDelta);
                 this.wasDraggingPanel = false;
             }
@@ -441,6 +458,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             // if (event.action === 'up') {
             this.touchStartY = null;
             // }
+            this.lastTouchY = null;
 
             // Reset dragging state on any end event
             this.wasDraggingPanel = false;
@@ -448,10 +466,13 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             // On Android sometimes we don't get the down event but we get move events
             // so initialize touchStartY if needed
             if (this.touchStartY === undefined) {
+                this.vt = VelocityTracker.obtain();
+                this.lastTouchY = null;
                 this.touchStartY = touchY;
                 this.wasDraggingPanel = false;
                 this.gestureModeDecided = false;
             }
+            this.vt?.addMovement(p.getX(), p.getY());
 
             const deltaY = touchY - this.touchStartY;
             const absDeltaY = Math.abs(deltaY);
@@ -485,7 +506,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                     // Switch to panel dragging mode (one-way, won't switch back during this gesture)
                     this.wasDraggingPanel = true;
                     this.isScrollEnabled = false;
-                    this.panGestureHandler.cancel();
+                    this.panGestureHandler?.cancel();
                 } else {
                     // Keep scrolling the list
                     if (!this.gestureModeDecided) {
@@ -507,15 +528,15 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             // Execute the current mode
             if (this.wasDraggingPanel) {
                 // Handle panel drag
-                const y = touchY - (this.lastTouchY || touchY);
+                const y = touchY - (this.lastTouchY ?? touchY);
                 const trY = this.constrainY(this.translationY + y);
                 this.translationY = trY;
                 const trData = this.computeTranslationData();
                 this.applyTrData(trData);
             }
             // else: let native scroll happen (do nothing)
+            this.lastTouchY = touchY;
         }
-        this.lastTouchY = touchY;
     }
 
     private onGestureState(args: GestureStateEventData) {
@@ -527,9 +548,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         const { state, prevState, extraData, view } = args.data;
         if (prevState === GestureState.ACTIVE) {
             const { velocityY, translationY } = extraData;
-            const dragToss = 0.05;
             const y = translationY - this.prevDeltaY;
-            const totalDelta = this.translationY + (y + dragToss * velocityY);
+            const totalDelta = this.translationY + (y + this.dragToss * velocityY);
             this.computeAndAnimateEndGestureAnimation(-totalDelta);
             this.prevDeltaY = 0;
         }
@@ -599,6 +619,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         if (this.animating) {
             return;
         }
+        this.notify({ eventName: 'animate', position, duration });
+
         this.animating = true;
         if (this._scrollView && __ANDROID__) {
             // on android we get unwanted scroll effect while "swipping the view"
