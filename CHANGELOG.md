@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.4](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.3...v0.1.4) (2026-02-06)
+
+### Bug Fixes
+
+* new animateStepIndex method ([a42d237](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/a42d237a93b4b1ce10034836f5178fdc1b1f3f38))
+* use `canAnimateToStep` to prevent some steps to be accessible by user gestures ([6b9aaf3](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/6b9aaf3ec55e8561f41246a80061be5ecfb8bcb4))
+
 ## [0.1.3](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.2...v0.1.3) (2026-02-06)
 
 ### Bug Fixes
