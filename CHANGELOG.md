@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.5](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.4...v0.1.5) (2026-02-06)
+
+### Bug Fixes
+
+* prevent error if start stepIndex is not 0 ([c244931](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/c24493175742c99eba21a101bda51d8b94356f96))
+
 ## [0.1.4](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.3...v0.1.4) (2026-02-06)
 
 ### Bug Fixes
