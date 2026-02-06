@@ -589,6 +589,13 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         stepIndexProperty.nativeValueChange(this, stepIndex);
         this.animateToPosition(destSnapPoint, Math.min(distance * 2, OPEN_DURATION));
     }
+
+    public animateStepIndex(stepIndex, duration?: number, curve?) {
+        const steps = this.steps;
+        stepIndexProperty.nativeValueChange(this, stepIndex);
+        const destSnapPoint = steps[stepIndex];
+        this.animateToPosition(destSnapPoint, duration, curve);
+    }
     private onGestureTouch(args: GestureTouchEventData) {
         // Ignore pan gesture handler when we're manually dragging panel via onTouch
         if (this.wasDraggingPanel) {
@@ -629,7 +636,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     }
 
     animating = false;
-    private async animateToPosition(position, duration = OPEN_DURATION) {
+    private async animateToPosition(position, duration = OPEN_DURATION, curve = CoreTypes.AnimationCurve.easeOut) {
         if (this.animation) {
             this.animation.cancel();
         }
@@ -656,7 +663,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 if (data.target) {
                     return Object.assign(
                         {
-                            curve: CoreTypes.AnimationCurve.easeOut,
+                            curve,
                             duration
                         },
                         transformAnimationValues(trData[k])
@@ -665,7 +672,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                     return Object.assign(
                         {
                             target: this[k],
-                            curve: CoreTypes.AnimationCurve.easeOut,
+                            curve,
                             duration
                         },
                         transformAnimationValues(trData[k])
