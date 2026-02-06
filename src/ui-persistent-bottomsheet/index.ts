@@ -477,10 +477,13 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             const deltaY = touchY - this.touchStartY;
             const absDeltaY = Math.abs(deltaY);
 
-            if (absDeltaY < SWIPE_DISTANCE_MINIMUM) {
-                // Movement too small - likely a tap
-                return;
-            }
+            // we cant have small movement ignore
+            // otherwise the scrollview would slowly start moving
+            // then after it would peek a scrollview wanting to scroll
+            // if (absDeltaY < SWIPE_DISTANCE_MINIMUM) {
+            //     // Movement too small - likely a tap
+            //     return;
+            // }
 
             // Check current scroll position
             const currentScrollY = this._scrollView ? this.scrollViewVerticalOffset : 0;
