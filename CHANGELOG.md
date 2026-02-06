@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.1](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.0...v0.1.1) (2026-02-04)
+
+### Features
+
+* smooth scroll-to-panel transition with tap support ([4dd44d0](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/4dd44d05575bd65bd22809fd0e8dee357d4f7e7a))
+
+### Bug Fixes
+
+* **angular:** set standalone: false for NgModule components ([62913a4](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/62913a44afe78d9e98954c1d0ed4a944849b9e6c))
+* **ios:** disable UIScrollView bounce for proper gesture handling ([e1d9ba8](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/e1d9ba85666e564ee78c715dfcca1ef67fb35f19))
+
 ## [0.1.0](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.0.30...v0.1.0) (2025-05-01)
 
 ### Bug Fixes
