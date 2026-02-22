@@ -5,6 +5,7 @@
         "ng",
         "react",
         "svelte",
-        "vue"
+        "vue",
+        "vue3"
     ]
 }
