@@ -76,7 +76,31 @@ Then in your component add the following:
 ```
 For a more complete example, look in the `demo-ng` directory.
 
-## Usage in Vue
+## Usage in Vue 3
+
+Register the plugin in your `app.ts`.
+
+```typescript
+import BottomSheetPlugin from '@nativescript-community/ui-persistent-bottomsheet/vue3';
+app.use(BottomSheetPlugin);
+```
+
+Then in your component add the following:
+
+```xml
+<BottomSheet>
+    <StackLayout backgroundColor="white">
+      <Label text="This is the main content" />
+    </StackLayout>
+    <GridLayout nodeRole="bottomSheet" backgroundColor="white" height="70">
+      <Label text="This is the side drawer content" />
+    </GridLayout>
+</BottomSheet>
+```
+
+For a more complete example, look in the `demo-vue3` directory.
+
+## Usage in Vue 2
 
 Register the plugin in your `app.js`.
 
