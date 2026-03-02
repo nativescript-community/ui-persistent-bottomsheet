@@ -165,13 +165,12 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         if (y < this.viewHeight + this.translationY) {
             return false;
         }
-        // TODO: what was this for?
-        // if (this._scrollView) {
-        //     const posY = this._scrollView && this.scrollView.getLocationRelativeTo(this).y + deltaY;
-        //     if (y >= posY && y <= posY + this.scrollView.getMeasuredHeight()) {
-        //         return false;
-        //     }
-        // }
+        if (this._scrollView) {
+            const posY = this._scrollView && this.scrollView.getLocationRelativeTo(this).y + deltaY;
+            if (y >= posY && y <= posY + this.scrollView.getMeasuredHeight()) {
+                return false;
+            }
+        }
         return true;
     }
     get translationY() {
@@ -510,7 +509,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                     // Switch to panel dragging mode (one-way, won't switch back during this gesture)
                     this.wasDraggingPanel = true;
                     this.isScrollEnabled = false;
-                    this.panGestureHandler?.cancel();
+                    this.cancelAllGestures();
                 } else {
                     // Keep scrolling the list
                     if (!this.gestureModeDecided) {

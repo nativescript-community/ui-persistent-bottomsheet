@@ -3,8 +3,8 @@
     "private": true,
     "version": "0.0.1",
     "dependencies": {
-        "@nativescript-community/gesturehandler": "^2.0.39",
-        "@nativescript-community/ui-collectionview": "^6.0.14",
+        "@nativescript-community/gesturehandler": "^2.0.43",
+        "@nativescript-community/ui-collectionview": "^6.0.16",
         "@nativescript-community/ui-persistent-bottomsheet": "*"
     }
 }
