@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.7](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.6...v0.1.7) (2026-03-02)
+
+### Bug Fixes
+
+* prevent tap events when bottomsheet started to scroll on android ([32e8e03](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/32e8e03317b350e0f20852dd772727b11d582019))
+
 ## [0.1.6](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.5...v0.1.6) (2026-03-02)
 
 ### Features
