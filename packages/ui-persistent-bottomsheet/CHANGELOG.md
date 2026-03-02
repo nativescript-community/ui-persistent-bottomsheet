@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.6](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.5...v0.1.6) (2026-03-02)
+
+### Bug Fixes
+
+* add Vue 3 support ([d6f127c](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/d6f127cbce7185553fae6de9b038eda001577413))
+
 ## [0.1.5](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.4...v0.1.5) (2026-02-06)
 
 **Note:** Version bump only for package @nativescript-community/ui-persistent-bottomsheet
