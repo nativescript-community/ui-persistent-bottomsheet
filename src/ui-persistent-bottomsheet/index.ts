@@ -154,7 +154,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         this.panGestureHandler = gestureHandler as any;
     }
     protected shouldStartGesture(data) {
-        if (this.steps.length === 0 || (this.steps.length === 1 && this.steps[0] === 0)) {
+        if (this.steps.length === 0 || (this.steps.length === 1 && this.steps[0] === 0) || (this.stepIndex === 0 && this.steps[0] === 0)) {
             return false;
         }
         let deltaY = 0;
@@ -165,12 +165,13 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         if (y < this.viewHeight + this.translationY) {
             return false;
         }
-        if (this._scrollView) {
-            const posY = this._scrollView && this.scrollView.getLocationRelativeTo(this).y + deltaY;
-            if (y >= posY && y <= posY + this.scrollView.getMeasuredHeight()) {
-                return false;
-            }
-        }
+        // TODO: what was this for?
+        // if (this._scrollView) {
+        //     const posY = this._scrollView && this.scrollView.getLocationRelativeTo(this).y + deltaY;
+        //     if (y >= posY && y <= posY + this.scrollView.getMeasuredHeight()) {
+        //         return false;
+        //     }
+        // }
         return true;
     }
     get translationY() {
@@ -690,6 +691,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         } finally {
             this.isScrollEnabled = true;
             this.animating = false;
+            this.panGestureHandler.enabled = this.stepIndex !== 0;
             this.animation = null;
             this.notify({ eventName: 'animated', position, duration });
         }
