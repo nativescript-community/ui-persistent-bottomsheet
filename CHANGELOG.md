@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.8](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.7...v0.1.8) (2026-03-11)
+
+### Bug Fixes
+
+* error on dispose/init ([6bdcbc7](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/6bdcbc71aefb38131e8263980395f770f2fdb8f5))
+
 ## [0.1.7](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.6...v0.1.7) (2026-03-02)
 
 ### Bug Fixes
