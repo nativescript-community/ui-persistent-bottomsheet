@@ -199,9 +199,11 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         // this.off('layoutChanged', this.onLayoutChange, this);
         if (this.scrollView) {
             this.scrollView.off('touch', this.onScrollViewTouch, this);
+            this.scrollView = null;
         }
         if (__ANDROID__ && this.bottomSheet) {
             this.bottomSheet.off('touch', this.onBottomSheetTouch, this);
+            this.bottomSheet = null;
         }
         super.disposeNativeView();
         if (this.panGestureHandler) {
