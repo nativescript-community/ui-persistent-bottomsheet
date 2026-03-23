@@ -454,7 +454,11 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 this.wasDraggingPanel = false;
             }
 
-            this.isScrollEnabled = true;
+            // only reset on bottomsheet up/cancel event (will happen after scrollView up/cancel)
+            // because doing it in scrollView could trigger unwanted scroll events breaking things
+            if (this.scrollViewTouched) {
+                this.isScrollEnabled = true;
+            }
 
             // Only reset touchStartY on 'up', not on 'cancel' (@tap elements send cancel mid-gesture)
             // if (event.action === 'up') {
@@ -514,7 +518,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                     this.cancelAllGestures();
                 } else {
                     // Keep scrolling the list
-                    if (!this.gestureModeDecided) {
+                    if (!this.gestureModeDecided && !isAtTop) {
                         this.gestureModeDecided = true;
                         this.isScrollEnabled = true;
                     }
