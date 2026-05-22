@@ -92,6 +92,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     private isAnimating = false;
     private prevDeltaY = 0;
     private viewHeight = 0;
+    private viewWidth = 0;
     // private bottomViewHeight = 0;
 
     private lastTouchY: number;
@@ -169,6 +170,16 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             const posY = this._scrollView && this.scrollView.getLocationRelativeTo(this).y + deltaY;
             if (y >= posY && y <= posY + this.scrollView.getMeasuredHeight()) {
                 return false;
+            }
+        }
+        // Check if gesture is within bottomSheet horizontal bounds (for partial-width panels)
+        if (this.bottomSheet) {
+            const bsWidth = Utils.layout.toDeviceIndependentPixels(this.bottomSheet.getMeasuredWidth());
+            if (bsWidth > 0 && bsWidth < this.viewWidth) {
+                const loc = this.bottomSheet.getLocationRelativeTo(this);
+                if (loc && (data.x < loc.x || data.x > loc.x + bsWidth)) {
+                    return false;
+                }
             }
         }
         return true;
@@ -370,7 +381,9 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     private onLayoutChanged(event: EventData) {
         const contentView = event.object as GridLayout;
         const height = Math.round(Utils.layout.toDeviceIndependentPixels(contentView.getMeasuredHeight()));
+        const width = Math.round(Utils.layout.toDeviceIndependentPixels(contentView.getMeasuredWidth()));
         this.viewHeight = height;
+        this.viewWidth = width;
         if (this.bottomSheet) {
             this.bottomSheet.top = {
                 unit: 'px',
