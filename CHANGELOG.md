@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.10](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.9...v0.1.10) (2026-05-22)
+
+### Bug Fixes
+
+* limit pan gesture to bottomSheet horizontal bounds ([fba68a6](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/fba68a681422e5b94f941b6f807fb12ed34265ed))
+
 ## [0.1.9](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.8...v0.1.9) (2026-03-23)
 
 ### Bug Fixes
