@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.11](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.10...v0.1.11) (2026-08-13)
+
+### Bug Fixes
+
+* honour panGestureOptions on the touch fallback path ([c9ea0e6](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/c9ea0e6633fc8e034e857cbe90c789e515d21284))
+
 ## [0.1.10](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.9...v0.1.10) (2026-05-22)
 
 ### Bug Fixes
