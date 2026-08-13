@@ -97,6 +97,9 @@ export class PersistentBottomSheet extends AbsoluteLayout {
 
     private lastTouchY: number;
     private touchStartY: number;
+    private touchStartX: number;
+    /** the touch went sideways, so it belongs to whatever is under the finger, not to the sheet */
+    private touchIsHorizontal = false;
     private wasDraggingPanel = false;
     private gestureModeDecided = false;
     private _translationY = -1;
@@ -438,12 +441,17 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     vt: VelocityTracker | null = null;
     private onTouch(event: TouchGestureEventData) {
         let touchY;
+        let touchX;
         // touch event gives you relative touch which varies with translateY
         // so we use touch location in the window
         if (__ANDROID__) {
-            touchY = Utils.layout.toDeviceIndependentPixels((event.android as android.view.MotionEvent).getRawY());
+            const motionEvent = event.android as android.view.MotionEvent;
+            touchY = Utils.layout.toDeviceIndependentPixels(motionEvent.getRawY());
+            touchX = Utils.layout.toDeviceIndependentPixels(motionEvent.getRawX());
         } else if (__IOS__) {
-            touchY = (event.ios.touches.anyObject() as UITouch).locationInView(null).y;
+            const location = (event.ios.touches.anyObject() as UITouch).locationInView(null);
+            touchY = location.y;
+            touchX = location.x;
         }
         const p = event.getActivePointers()[0];
         if (event.action === 'down') {
@@ -451,6 +459,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             this.vt.addMovement(p.getX(), p.getY());
             this.lastTouchY = null;
             this.touchStartY = touchY;
+            this.touchStartX = touchX;
+            this.touchIsHorizontal = false;
             this.wasDraggingPanel = false;
             this.gestureModeDecided = false;
         } else if (event.action === 'up' || event.action === 'cancel') {
@@ -478,6 +488,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             this.touchStartY = null;
             // }
             this.lastTouchY = null;
+            this.touchIsHorizontal = false;
 
             // Reset dragging state on any end event
             this.wasDraggingPanel = false;
@@ -488,6 +499,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 this.vt = VelocityTracker.obtain();
                 this.lastTouchY = null;
                 this.touchStartY = touchY;
+                this.touchStartX = touchX;
+                this.touchIsHorizontal = false;
                 this.wasDraggingPanel = false;
                 this.gestureModeDecided = false;
             }
@@ -495,6 +508,31 @@ export class PersistentBottomSheet extends AbsoluteLayout {
 
             const deltaY = touchY - this.touchStartY;
             const absDeltaY = Math.abs(deltaY);
+
+            // This path is a plain touch listener, so the pan gesture handler options never reach it.
+            // Without them a horizontal drag over a child that pans or zooms - a chart, a pager -
+            // still flips us into panel dragging on the first pixel of vertical drift, and the
+            // cancelAllGestures() below then kills that child's handlers. So honour here the same
+            // options the caller passed for the gesture handler. Opt in: with no panGestureOptions
+            // nothing below changes
+            if (!this.wasDraggingPanel && this.panGestureOptions) {
+                const { failOffsetXEnd, failOffsetXStart, minDist } = this.panGestureOptions;
+                const deltaX = touchX - this.touchStartX;
+                if (
+                    this.touchIsHorizontal ||
+                    (failOffsetXEnd !== undefined && deltaX > failOffsetXEnd) ||
+                    (failOffsetXStart !== undefined && deltaX < failOffsetXStart)
+                ) {
+                    // one way for the rest of the touch, like the handler's own fail offsets
+                    this.touchIsHorizontal = true;
+                    this.lastTouchY = touchY;
+                    return;
+                }
+                if (minDist !== undefined && absDeltaY < minDist) {
+                    this.lastTouchY = touchY;
+                    return;
+                }
+            }
 
             // we cant have small movement ignore
             // otherwise the scrollview would slowly start moving
