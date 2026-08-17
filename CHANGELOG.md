@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.12](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.11...v0.1.12) (2026-08-17)
+
+### Bug Fixes
+
+* svelte fix for community version ([5518d14](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/5518d14b348229d67f662d296313767d33ef451e))
+
 ## [0.1.11](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.10...v0.1.11) (2026-08-13)
 
 ### Bug Fixes
