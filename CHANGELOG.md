@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.13](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.12...v0.1.13) (2026-09-04)
+
+### Bug Fixes
+
+* **ios:** touch handling was not working like android ([e905ac4](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/e905ac4d4d7c844fae2c7474486b742165a4f3b9))
+
 ## [0.1.12](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.11...v0.1.12) (2026-08-17)
 
 ### Bug Fixes
