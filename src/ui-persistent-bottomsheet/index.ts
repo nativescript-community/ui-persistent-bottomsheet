@@ -209,6 +209,11 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         if (this.gestureEnabled) {
             this.initGestures();
         }
+        // After native view recreation bottomSheet is kept but scrollView is not: children get
+        // their native views after ours, so look it up again once the sheet is loaded.
+        if (!this.scrollView && this.bottomSheet && this.scrollViewId) {
+            this._onScrollViewIdChanged(null, this.scrollViewId);
+        }
     }
     disposeNativeView() {
         // this.off('layoutChanged', this.onLayoutChange, this);
@@ -216,9 +221,10 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             this.scrollView.off('touch', this.onScrollViewTouch, this);
             this.scrollView = null;
         }
+        // Keep bottomSheet: native views can be recreated while the JS tree survives (Android
+        // activity recreation), and nulling it would remove the sheet from the tree for good.
         if (this.bottomSheet) {
             this.bottomSheet.off('touch', this.onBottomSheetTouch, this);
-            this.bottomSheet = null;
         }
         super.disposeNativeView();
         if (this.panGestureHandler) {
