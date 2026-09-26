@@ -551,12 +551,14 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             if (!this.wasDraggingPanel) {
                 let shouldStartDraggingPanel = false;
 
-                if (deltaY > 0) {
-                    // Swiping DOWN - start dragging panel if reached top
-                    shouldStartDraggingPanel = isAtTop;
-                } else {
-                    // Swiping UP - start dragging panel if at top AND panel not fully expanded
-                    if (isAtTop) {
+                // wait for a clear direction: a swipe up drags the panel even over a scrolled list
+                if (absDeltaY >= SWIPE_DISTANCE_MINIMUM) {
+                    if (deltaY > 0) {
+                        // Swiping DOWN - start dragging panel if reached top
+                        shouldStartDraggingPanel = isAtTop;
+                    } else {
+                        // Swiping UP - expand the panel first, wherever the list is scrolled:
+                        // a list scrolled to its end would otherwise leave its last items out of reach
                         const maxOffset = this.translationMaxOffset;
                         const isPanelFullyExpanded = Math.abs(this.translationY + maxOffset) < 1;
                         shouldStartDraggingPanel = !isPanelFullyExpanded;
