@@ -31,14 +31,13 @@ const OPEN_DURATION = 200;
 export let PAN_GESTURE_TAG = 12400;
 const SWIPE_DISTANCE_MINIMUM = 10;
 
-function transformAnimationValues(values) {
-    values.translate = { x: values.translateX || 0, y: values.translateY || 0 };
-    values.scale = { x: values.scaleX || 1, y: values.scaleY || 1 };
-    delete values.translateX;
-    delete values.translateY;
-    delete values.scaleX;
-    delete values.scaleY;
-    return values;
+function transformAnimationValues({ translateX, translateY, scaleX, scaleY, ...values }) {
+    // a copy: trData is applied again once the animation ends
+    return {
+        ...values,
+        translate: { x: translateX || 0, y: translateY || 0 },
+        scale: { x: scaleX || 1, y: scaleY || 1 }
+    };
 }
 
 export interface BottomSheetEventData extends EventData {
@@ -697,6 +696,9 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     private async animateToPosition(position, duration = OPEN_DURATION, curve = CoreTypes.AnimationCurve.easeOut) {
         if (this.animation) {
             this.animation.cancel();
+            // on iOS cancel() never settles play(), so the cancelled call never reaches its finally block
+            this.animation = null;
+            this.animating = false;
         }
         if (this.animating) {
             return;
@@ -738,19 +740,25 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 }
             })
             .filter((a) => !!a);
+        let animation: Animation = null;
         try {
-            this.animation = new Animation(params);
-            await this.animation.play();
+            animation = new Animation(params);
+            this.animation = animation;
+            await animation.play();
         } catch (err) {
-            //ensure we go to end position
-            this.applyTrData(trData);
             console.error('BottomSheet animation cancelled', err);
         } finally {
-            this.isScrollEnabled = true;
-            this.animating = false;
-            this.panGestureHandler.enabled = this.stepIndex !== 0;
-            this.animation = null;
-            this.notify({ eventName: 'animated', position, duration });
+            // otherwise a newer call has taken over
+            if (this.animation === animation) {
+                // a cancelled animation can still write its own target when its CAAnimation starts,
+                // and a hidden layer (app in background) never starts one: commit the end position
+                this.applyTrData(trData);
+                this.isScrollEnabled = true;
+                this.animating = false;
+                this.panGestureHandler.enabled = this.stepIndex !== 0;
+                this.animation = null;
+                this.notify({ eventName: 'animated', position, duration });
+            }
         }
     }
 }
