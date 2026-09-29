@@ -123,9 +123,17 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         return result;
     }
     set steps(value: number[]) {
+        const previous = this._steps;
         this._steps = value;
-
-        if (this._steps?.length) {
+        if (!value?.length) {
+            return;
+        }
+        const target = value[Math.min(this.stepIndex, value.length - 1)] ?? 0;
+        // once laid out, a step that moved is animated to, and an animation under way is retargeted:
+        // snapping there would be undone by the running animation, which still ends on the old step
+        if (this.viewHeight !== 0 && previous && (this.animating || -this.translationY !== target)) {
+            this.animateToPosition(target);
+        } else {
             this.alignToStepPosition();
         }
     }
@@ -247,7 +255,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         }
     }
     [stepIndexProperty.setNative](value: number) {
-        if (this.viewHeight !== 0) {
+        // no such step yet: the steps are about to change, and their setter moves the sheet
+        if (this.viewHeight !== 0 && this.steps?.[value] !== undefined) {
             // we are layed out
             this.animateToPosition(this.steps[value]);
         }
