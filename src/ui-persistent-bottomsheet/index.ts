@@ -768,6 +768,12 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 // a cancelled animation can still write its own target when its CAAnimation starts,
                 // and a hidden layer (app in background) never starts one: commit the end position
                 this.applyTrData(trData);
+                if (__ANDROID__) {
+                    // With a SurfaceView under the window (a map), Android crops the window to what
+                    // its views covered at the last layout: a translation is no layout, so once the
+                    // sheet moved, views where it no longer is would stay cut off without one.
+                    this.nativeViewProtected?.requestLayout();
+                }
                 this.isScrollEnabled = true;
                 this.animating = false;
                 this.panGestureHandler.enabled = this.stepIndex !== 0;
