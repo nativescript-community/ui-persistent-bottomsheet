@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.14](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.13...v0.1.14) (2026-10-02)
+
+### Bug Fixes
+
+* **android:** keep bottomSheet across native view recreation ([b348ad3](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/b348ad36b645a98986f2da63fac8f5991a9f5622))
+* animate to the new step when the steps change ([577a1b9](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/577a1b911def8451d630f7ccf6d61faa1bfdcf6e))
+* **ios:** don't leave the sheet stuck after a cancelled animation ([b9d967a](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/b9d967a8c7829087a104812429b8a1be0ac44580))
+
 ## [0.1.13](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.12...v0.1.13) (2026-09-04)
 
 ### Bug Fixes
