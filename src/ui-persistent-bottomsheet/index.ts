@@ -144,12 +144,10 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         if (this.scrollView) {
             this.scrollView.on('touch', this.onScrollViewTouch, this);
         }
-        // Also listen to touch events on bottomSheet to detect gestures that start on children
-        // overlaying the scrollView (headers, drag handles, buttons...). Those swallow the touch
-        // so the scrollView listener never sees it, and shouldStartGesture rejects the pan handler
-        // for anything inside the scrollView bounds. onBottomSheetTouch is a no-op while the
-        // scrollView is touched, so the scrollView keeps driving the gesture when it is the target.
-        if (this.bottomSheet) {
+        // Android only: there it catches drags that start on children consuming the touch,
+        // such as buttons. On iOS the pan handler already drags from them, and this listener
+        // would turn any move into a panel drag whose cancelAllGestures() swallows the tap.
+        if (__ANDROID__ && this.bottomSheet) {
             this.bottomSheet.on('touch', this.onBottomSheetTouch, this);
         }
         const manager = Manager.getInstance();
