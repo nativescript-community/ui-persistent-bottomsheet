@@ -31,6 +31,25 @@ const OPEN_DURATION = 200;
 export let PAN_GESTURE_TAG = 12400;
 const SWIPE_DISTANCE_MINIMUM = 10;
 
+let scrollPanTargetClass: any;
+/** iOS: the class of the target of the pan of the scroll view. A native class can be registered once: it is shared by all the sheets, each target knows its sheet */
+function getScrollPanTargetClass() {
+    if (!scrollPanTargetClass) {
+        scrollPanTargetClass = (NSObject as any).extend(
+            {
+                handlePan(recognizer: UIPanGestureRecognizer) {
+                    this.owner?.get()?.onScrollPanIOS(recognizer);
+                }
+            },
+            {
+                name: 'PersistentBottomSheetPanTarget',
+                exposedMethods: { handlePan: { returns: interop.types.void, params: [interop.types.id] } }
+            }
+        );
+    }
+    return scrollPanTargetClass;
+}
+
 function transformAnimationValues({ translateX, translateY, scaleX, scaleY, ...values }) {
     // a copy: trData is applied again once the animation ends
     return {
@@ -101,6 +120,10 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     private touchIsHorizontal = false;
     private wasDraggingPanel = false;
     private gestureModeDecided = false;
+    /** iOS: the pan of the list scroll view drives the sheet while the finger is in the list */
+    private iosPanTarget: any;
+    private iosPanScrollView: UIScrollView;
+    private iosPan = { lastTranslation: 0, previousOffset: 0, sheetMoved: false, blocked: false };
     private _translationY = -1;
     public gestureEnabled = true;
     private _scrollView: ScrollView;
@@ -141,7 +164,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     // nativeGestureHandler: PanGestureHandler;
     translationFunction?: (delta: number, max: number, progress: number) => { bottomSheet?: AnimationDefinition; backDrop?: AnimationDefinition };
     protected initGestures() {
-        if (this.scrollView) {
+        // iOS: the pan gesture handler (the header) and the pan of the scroll view (the list) drive the sheet, the touch events are not needed
+        if (this.scrollView && __ANDROID__) {
             this.scrollView.on('touch', this.onScrollViewTouch, this);
         }
         // Also listen to touch events on bottomSheet to detect gestures that start on children
@@ -149,7 +173,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         // so the scrollView listener never sees it, and shouldStartGesture rejects the pan handler
         // for anything inside the scrollView bounds. onBottomSheetTouch is a no-op while the
         // scrollView is touched, so the scrollView keeps driving the gesture when it is the target.
-        if (this.bottomSheet) {
+        if (this.bottomSheet && __ANDROID__) {
             this.bottomSheet.on('touch', this.onBottomSheetTouch, this);
         }
         const manager = Manager.getInstance();
@@ -226,6 +250,9 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         // this.off('layoutChanged', this.onLayoutChange, this);
         if (this.scrollView) {
             this.scrollView.off('touch', this.onScrollViewTouch, this);
+            if (__IOS__) {
+                this.detachScrollPanIOS();
+            }
             this.scrollView = null;
         }
         // Keep bottomSheet: native views can be recreated while the JS tree survives (Android
@@ -288,17 +315,22 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         }
         if (this._scrollView) {
             this.scrollView.off('touch', this.onScrollViewTouch, this);
+            if (__IOS__) {
+                this.detachScrollPanIOS();
+            }
         }
         this._scrollView = value;
 
         if (value) {
-            if (__IOS__) {
-                // Disable bounce effect to prevent scroll acceleration (2x speed issue)
-                // and to allow panel dragging when reaching scroll boundaries.
-                value.nativeViewProtected.bounces = false;
-            }
-            if (this.gestureEnabled) {
+            if (this.gestureEnabled && __ANDROID__) {
                 value.on('touch', this.onScrollViewTouch, this);
+            }
+            if (__IOS__) {
+                if (value.nativeViewProtected) {
+                    this.attachScrollPanIOS(value.nativeViewProtected);
+                } else {
+                    value.once('loaded', () => this._scrollView === value && this.attachScrollPanIOS(value.nativeViewProtected));
+                }
             }
             value.isScrollEnabled = this._isScrollEnabled;
         }
@@ -363,11 +395,12 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         }
     }
 
-    computeTranslationData() {
+    /** `hideUnderSafeArea`: the closed sheet goes under the safe area. Not while it is dragged: it would jump when it reaches its bottom */
+    computeTranslationData(hideUnderSafeArea = true) {
         const max = this.translationMaxOffset;
         let value = this._translationY;
         const progress = -value / max;
-        if (__IOS__ && progress === 0 && !this.iosIgnoreSafeArea) {
+        if (__IOS__ && hideUnderSafeArea && progress === 0 && !this.iosIgnoreSafeArea) {
             // if this is the 0 steop ensure it gets hidden even with safeArea
             const safeArea = this.getSafeAreaInsets();
             value += Utils.layout.toDeviceIndependentPixels(safeArea.bottom);
@@ -614,6 +647,97 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         }
     }
 
+    /**
+     * iOS: the list is dragged by its own pan, which never stops: the sheet and the list share what the finger moves.
+     * The list is kept where it is while the sheet moves (it is at its top to let the sheet move), and the sheet leaves what it cannot move to the list.
+     * A target of that pan gets every change, even when the touch events of the view are cancelled by the scroll view.
+     */
+    private attachScrollPanIOS(scrollView: UIScrollView) {
+        if (this.iosPanScrollView === scrollView) {
+            return;
+        }
+        this.detachScrollPanIOS();
+        this.iosPanTarget = getScrollPanTargetClass().new();
+        this.iosPanTarget.owner = new WeakRef(this);
+        this.iosPanScrollView = scrollView;
+        scrollView.panGestureRecognizer.addTargetAction(this.iosPanTarget, 'handlePan');
+    }
+
+    private detachScrollPanIOS() {
+        if (this.iosPanScrollView && this.iosPanTarget) {
+            this.iosPanScrollView.panGestureRecognizer.removeTargetAction(this.iosPanTarget, 'handlePan');
+        }
+        this.iosPanTarget = null;
+        this.iosPanScrollView = null;
+    }
+
+    private onScrollPanIOS(recognizer: UIPanGestureRecognizer) {
+        const scrollView = this.iosPanScrollView;
+        if (!scrollView || !this.gestureEnabled) {
+            return;
+        }
+        const state = recognizer.state;
+        const translation = recognizer.translationInView(scrollView).y;
+        const pan = this.iosPan;
+        if (state === UIGestureRecognizerState.Began) {
+            // what the list already followed of the finger is taken back to know where it was
+            pan.lastTranslation = translation;
+            pan.previousOffset = scrollView.contentOffset.y + translation;
+            pan.sheetMoved = false;
+            pan.blocked = this.animating || this.steps.length < 2;
+            return;
+        }
+        if (state === UIGestureRecognizerState.Changed) {
+            const dy = translation - pan.lastTranslation;
+            pan.lastTranslation = translation;
+            if (pan.blocked || !dy) {
+                pan.previousOffset = scrollView.contentOffset.y;
+                return;
+            }
+            const inset = scrollView.adjustedContentInset;
+            const top = -inset.top;
+            const position = -this.translationY;
+            const offset = pan.previousOffset;
+            let sheetMove = 0;
+            let newOffset: number = null;
+            if (dy < 0) {
+                // finger up: the sheet rises while the list is at its top, what it cannot rise is for the list
+                if (offset <= top + 0.5) {
+                    sheetMove = Math.min(-dy, this.translationMaxOffset - position);
+                    newOffset = top + (-dy - sheetMove);
+                }
+            } else {
+                // finger down: the list goes back to its top, then the sheet goes down
+                const listMove = Math.min(dy, Math.max(0, offset - top));
+                const rest = dy - listMove;
+                if (rest > 0 && position > 0) {
+                    sheetMove = -Math.min(rest, position);
+                    newOffset = top;
+                }
+            }
+            if (sheetMove) {
+                pan.sheetMoved = true;
+                this.translationY = this.constrainY(this.translationY - sheetMove);
+                this.applyTrData(this.computeTranslationData(false));
+            }
+            if (newOffset !== null && (sheetMove || pan.sheetMoved)) {
+                scrollView.contentOffset = CGPointMake(scrollView.contentOffset.x, newOffset);
+            }
+            pan.previousOffset = scrollView.contentOffset.y;
+            return;
+        }
+        if (state === UIGestureRecognizerState.Ended || state === UIGestureRecognizerState.Cancelled || state === UIGestureRecognizerState.Failed) {
+            if (pan.sheetMoved) {
+                pan.sheetMoved = false;
+                const velocity = recognizer.velocityInView(scrollView).y;
+                // the list does not go on with what is left of the finger
+                scrollView.scrollEnabled = false;
+                setTimeout(() => (scrollView.scrollEnabled = true), 0);
+                this.computeAndAnimateEndGestureAnimation(-(this.translationY + this.dragToss * velocity));
+            }
+        }
+    }
+
     private onGestureState(args: GestureStateEventData) {
         // Ignore pan gesture handler when we're manually dragging panel via onTouch
         if (this.wasDraggingPanel) {
@@ -686,7 +810,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         const y = deltaY - this.prevDeltaY;
         const trY = this.constrainY(this.translationY + y);
         this.translationY = trY;
-        const trData = this.computeTranslationData();
+        const trData = this.computeTranslationData(false);
         this.applyTrData(trData);
         this.prevDeltaY = deltaY;
     }
