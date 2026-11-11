@@ -31,6 +31,25 @@ const OPEN_DURATION = 200;
 export let PAN_GESTURE_TAG = 12400;
 const SWIPE_DISTANCE_MINIMUM = 10;
 
+let scrollPanTargetClass: any;
+/** iOS: the class of the target of the pan of the scroll view. A native class can be registered once: it is shared by all the sheets, each target knows its sheet */
+function getScrollPanTargetClass() {
+    if (!scrollPanTargetClass) {
+        scrollPanTargetClass = (NSObject as any).extend(
+            {
+                handlePan(recognizer: UIPanGestureRecognizer) {
+                    this.owner?.get()?.onScrollPanIOS(recognizer);
+                }
+            },
+            {
+                name: 'PersistentBottomSheetPanTarget',
+                exposedMethods: { handlePan: { returns: interop.types.void, params: [interop.types.id] } }
+            }
+        );
+    }
+    return scrollPanTargetClass;
+}
+
 function transformAnimationValues({ translateX, translateY, scaleX, scaleY, ...values }) {
     // a copy: trData is applied again once the animation ends
     return {
@@ -638,19 +657,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             return;
         }
         this.detachScrollPanIOS();
-        const owner = new WeakRef(this);
-        const Target = (NSObject as any).extend(
-            {
-                handlePan(recognizer: UIPanGestureRecognizer) {
-                    owner.get()?.onScrollPanIOS(recognizer);
-                }
-            },
-            {
-                name: 'PersistentBottomSheetPanTarget',
-                exposedMethods: { handlePan: { returns: interop.types.void, params: [interop.types.id] } }
-            }
-        );
-        this.iosPanTarget = Target.new();
+        this.iosPanTarget = getScrollPanTargetClass().new();
+        this.iosPanTarget.owner = new WeakRef(this);
         this.iosPanScrollView = scrollView;
         scrollView.panGestureRecognizer.addTargetAction(this.iosPanTarget, 'handlePan');
     }
