@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.15](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.14...v0.1.15) (2026-11-11)
+
+### Bug Fixes
+
+* **android:** request a layout after the sheet animates so the window is not left cropped ([02834c2](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/02834c2b9e757ef2c5ba52b6b2c47251c9440302))
+* **ios:** create the class of the scroll pan target once ([9942e0e](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/9942e0e2ce597e5dba77f55285f045a6ddd8e24f))
+* **ios:** hand the drag over between the sheet and its scroll view ([eba61c5](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/eba61c580bfdf79a32e5861c6d27ff89685d444f))
+* **ios:** hide the closed sheet again when the bottom safe area changes ([5fe8644](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/5fe86448d16ae10f0c03b3b5c8e024038079cfd2))
+
 ## [0.1.14](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.13...v0.1.14) (2026-10-02)
 
 ### Bug Fixes
