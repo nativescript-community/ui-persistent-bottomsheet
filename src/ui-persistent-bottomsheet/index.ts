@@ -125,6 +125,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     private iosPanScrollView: UIScrollView;
     private iosPan = { lastTranslation: 0, previousOffset: 0, sheetMoved: false, blocked: false };
     private _translationY = -1;
+    /** iOS: the bottom safe area (px) the closed sheet was hidden under: it changes with a toolbar of the page, and the sheet peeks or goes too far if it is not hidden again */
+    private hiddenSafeAreaBottom = 0;
     public gestureEnabled = true;
     private _scrollView: ScrollView;
     private _isScrollEnabled = true;
@@ -403,6 +405,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         if (__IOS__ && hideUnderSafeArea && progress === 0 && !this.iosIgnoreSafeArea) {
             // if this is the 0 steop ensure it gets hidden even with safeArea
             const safeArea = this.getSafeAreaInsets();
+            this.hiddenSafeAreaBottom = safeArea.bottom;
             value += Utils.layout.toDeviceIndependentPixels(safeArea.bottom);
         }
         if (this.translationFunction) {
@@ -442,6 +445,9 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             };
         }
         if (this.translationY === -1) {
+            this.alignToStepPosition();
+        } else if (__IOS__ && this.translationY === 0 && !this.animating && !this.iosIgnoreSafeArea && this.getSafeAreaInsets().bottom !== this.hiddenSafeAreaBottom) {
+            // closed: the safe area changed (a bottom toolbar came or left), hide the sheet under the new one
             this.alignToStepPosition();
         }
     }
