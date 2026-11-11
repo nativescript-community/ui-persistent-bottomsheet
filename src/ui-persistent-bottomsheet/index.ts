@@ -101,8 +101,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     private touchIsHorizontal = false;
     private wasDraggingPanel = false;
     private gestureModeDecided = false;
-    /** iOS: the touch started in the list: the pan of the list scroll view drives the sheet, not the touch events */
-    private touchInScrollViewIOS = false;
+    /** iOS: the pan of the list scroll view drives the sheet while the finger is in the list */
     private iosPanTarget: any;
     private iosPanScrollView: UIScrollView;
     private iosPan = { lastTranslation: 0, previousOffset: 0, sheetMoved: false, blocked: false };
@@ -146,7 +145,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     // nativeGestureHandler: PanGestureHandler;
     translationFunction?: (delta: number, max: number, progress: number) => { bottomSheet?: AnimationDefinition; backDrop?: AnimationDefinition };
     protected initGestures() {
-        if (this.scrollView) {
+        // iOS: the pan gesture handler (the header) and the pan of the scroll view (the list) drive the sheet, the touch events are not needed
+        if (this.scrollView && __ANDROID__) {
             this.scrollView.on('touch', this.onScrollViewTouch, this);
         }
         // Also listen to touch events on bottomSheet to detect gestures that start on children
@@ -154,7 +154,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         // so the scrollView listener never sees it, and shouldStartGesture rejects the pan handler
         // for anything inside the scrollView bounds. onBottomSheetTouch is a no-op while the
         // scrollView is touched, so the scrollView keeps driving the gesture when it is the target.
-        if (this.bottomSheet) {
+        if (this.bottomSheet && __ANDROID__) {
             this.bottomSheet.on('touch', this.onBottomSheetTouch, this);
         }
         const manager = Manager.getInstance();
@@ -303,7 +303,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         this._scrollView = value;
 
         if (value) {
-            if (this.gestureEnabled) {
+            if (this.gestureEnabled && __ANDROID__) {
                 value.on('touch', this.onScrollViewTouch, this);
             }
             if (__IOS__) {
@@ -486,14 +486,12 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         if (event.action === 'down') {
             this.vt = VelocityTracker.obtain();
             this.vt.addMovement(p.getX(), p.getY());
-            // iOS: the first move already moves the sheet, else it stays behind the finger
-            this.lastTouchY = __IOS__ ? touchY : null;
+            this.lastTouchY = null;
             this.touchStartY = touchY;
             this.touchStartX = touchX;
             this.touchIsHorizontal = false;
             this.wasDraggingPanel = false;
             this.gestureModeDecided = false;
-            this.touchInScrollViewIOS = __IOS__ && this.isPointInScrollView(touchX, touchY);
         } else if (event.action === 'up' || event.action === 'cancel') {
             this.vt?.addMovement(p.getX(), p.getY());
             // If we were dragging the panel, animate to nearest step
@@ -510,8 +508,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
 
             // only reset on bottomsheet up/cancel event (will happen after scrollView up/cancel)
             // because doing it in scrollView could trigger unwanted scroll events breaking things
-            // iOS: a touch which started out of the list (a header) can have disabled it
-            if (this.scrollViewTouched || __IOS__) {
+            if (this.scrollViewTouched) {
                 this.isScrollEnabled = true;
             }
 
@@ -566,12 +563,6 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 }
             }
 
-            // iOS: the pan of the list drives the sheet for a touch which started in the list
-            if (this.touchInScrollViewIOS) {
-                this.lastTouchY = touchY;
-                return;
-            }
-
             // we cant have small movement ignore
             // otherwise the scrollview would slowly start moving
             // then after it would peek a scrollview wanting to scroll
@@ -582,8 +573,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
 
             // Check current scroll position
             const currentScrollY = this._scrollView ? this.scrollViewVerticalOffset : 0;
-            // a touch which started out of the list (a header) is for the sheet, whatever the list shows
-            const isAtTop = currentScrollY === 0 || (__IOS__ && !!this._scrollView && !this.touchInScrollViewIOS);
+            const isAtTop = currentScrollY === 0;
 
             // If not yet dragging panel, check if we should start (one-way transition)
             if (!this.wasDraggingPanel) {
@@ -630,23 +620,12 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 const y = touchY - (this.lastTouchY ?? touchY);
                 const trY = this.constrainY(this.translationY + y);
                 this.translationY = trY;
-                const trData = this.computeTranslationData(false);
+                const trData = this.computeTranslationData();
                 this.applyTrData(trData);
             }
             // else: let native scroll happen (do nothing)
             this.lastTouchY = touchY;
         }
-    }
-
-    private isPointInScrollView(x: number, y: number) {
-        const scrollView = this._scrollView;
-        if (!scrollView) {
-            return false;
-        }
-        const location = scrollView.getLocationOnScreen();
-        const width = Utils.layout.toDeviceIndependentPixels(scrollView.getMeasuredWidth());
-        const height = Utils.layout.toDeviceIndependentPixels(scrollView.getMeasuredHeight());
-        return !!location && x >= location.x && x <= location.x + width && y >= location.y && y <= location.y + height;
     }
 
     /**
