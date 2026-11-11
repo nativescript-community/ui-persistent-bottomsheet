@@ -128,11 +128,6 @@ install();
 
 ## Notes
 
-[](#testing-in-the-ios-simulator)
-
-
-[](#testing-in-the-ios-simulator)
-
 ### Testing in the iOS simulator
 Test the drag of the sheet on a device. The simulator turns the mouse into touches and can put samples in the stream of a drag which are about 35 points ahead of the pointer, once in a few tens of events (they are in the coalesced touches the system gives, not something the sheet computes). The sheet follows the touches it gets, so in the simulator it can flicker while it is dragged. It does not on a device.
 
