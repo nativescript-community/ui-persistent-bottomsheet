@@ -27,9 +27,26 @@ import {
     booleanConverter
 } from '@nativescript/core';
 import { VelocityTracker } from './VelocityTracker';
+import { DEFAULT_FLING_VELOCITY, computeSnapIndex } from './snap';
 const OPEN_DURATION = 200;
 export let PAN_GESTURE_TAG = 12400;
 const SWIPE_DISTANCE_MINIMUM = 10;
+
+let debugEnabled = false;
+/** Logs `[PBS]` lines to reproduce gesture issues: what the finger did, what the sheet decided */
+export function setDebug(value: boolean) {
+    debugEnabled = value;
+}
+function debugLog(...args: any[]) {
+    if (debugEnabled) {
+        console.log('[PBS]', Math.round(performance.now()), ...args);
+    }
+}
+function debugWarn(...args: any[]) {
+    if (debugEnabled) {
+        console.warn('[PBS] WARN', Math.round(performance.now()), ...args);
+    }
+}
 
 let scrollPanTargetClass: any;
 /** iOS: the class of the target of the pan of the scroll view. A native class can be registered once: it is shared by all the sheets, each target knows its sheet */
@@ -120,6 +137,12 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     private touchIsHorizontal = false;
     private wasDraggingPanel = false;
     private gestureModeDecided = false;
+    /** android: a finger is down, from the touch events */
+    private touchActive = false;
+    /** the pan gesture handler is dragging the sheet */
+    private panHandlerActive = false;
+    private restGuardTimer: ReturnType<typeof setTimeout>;
+    private cancelSnapTimer: ReturnType<typeof setTimeout>;
     /** iOS: the pan of the list scroll view drives the sheet while the finger is in the list */
     private iosPanTarget: any;
     private iosPanScrollView: UIScrollView;
@@ -132,10 +155,16 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     private _isScrollEnabled = true;
 
     private animation: Animation;
+    /** the id of the last animation started: only that one cleans up when it ends */
+    private animationRun = 0;
+    private panHandlerEnabled: boolean;
 
     private _allowBottomSheetAdd = false;
 
+    /** seconds of velocity added to where the finger released the sheet: a hard fling can skip steps */
     public dragToss = 0.05;
+    /** dp/s above which a release is a fling: the sheet goes to the next step in the direction of the fling */
+    public flingVelocity = DEFAULT_FLING_VELOCITY;
 
     constructor() {
         super();
@@ -190,8 +219,14 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         gestureHandler.on(GestureHandlerStateEvent, this.onGestureState, this);
         gestureHandler.attachToView(this);
         this.panGestureHandler = gestureHandler as any;
+        this.panHandlerEnabled = undefined;
     }
     protected shouldStartGesture(data) {
+        const verdict = this.computeShouldStartGesture(data);
+        debugLog('shouldStartGesture', verdict, `x=${Math.round(data.x)} y=${Math.round(data.y)}`, `position=${Math.round(-this.translationY)}`, `full=${this.isFullyExpanded}`);
+        return verdict;
+    }
+    private computeShouldStartGesture(data) {
         if (this.steps.length === 0 || (this.steps.length === 1 && this.steps[0] === 0) || (this.stepIndex === 0 && this.steps[0] === 0)) {
             return false;
         }
@@ -205,7 +240,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         }
         if (this._scrollView) {
             const posY = this._scrollView && this.scrollView.getLocationRelativeTo(this).y + deltaY;
-            if (y >= posY && y <= posY + this.scrollView.getMeasuredHeight()) {
+            // iOS: the list only scrolls at the full step, below it the touch belongs to the sheet
+            if (y >= posY && y <= posY + this.scrollView.getMeasuredHeight() && !(__IOS__ && !this.isFullyExpanded)) {
                 return false;
             }
         }
@@ -231,6 +267,9 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         //     this.isScrollEnabled = value === 0;
         // }
         this._translationY = value;
+    }
+    get isFullyExpanded() {
+        return -this.translationY >= this.translationMaxOffset - 0.5;
     }
     get translationMaxOffset() {
         const steps = this.steps;
@@ -278,7 +317,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     }
     [gestureEnabledProperty.setNative](value: boolean) {
         if (this.panGestureHandler) {
-            this.panGestureHandler.enabled = value;
+            this.setPanHandlerEnabled(value);
         } else if (value && !this.panGestureHandler) {
             this.initGestures();
         }
@@ -431,6 +470,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         this.translationY = -ty;
         const data = this.computeTranslationData();
         this.applyTrData(data);
+        this.updateScrollEnabledIOS(ty);
     }
     private onLayoutChanged(event: EventData) {
         const contentView = event.object as GridLayout;
@@ -438,6 +478,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         const width = Math.round(Utils.layout.toDeviceIndependentPixels(contentView.getMeasuredWidth()));
         this.viewHeight = height;
         this.viewWidth = width;
+        debugLog('layout', `height=${height} width=${width}`, `steps=${JSON.stringify(this.steps)}`, __IOS__ ? `safeArea=${JSON.stringify(this.getSafeAreaInsets())}` : '');
         if (this.bottomSheet) {
             this.bottomSheet.top = {
                 unit: 'px',
@@ -469,12 +510,28 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         return this._isScrollEnabled;
     }
     set isScrollEnabled(value: boolean) {
-        if (this._isScrollEnabled !== value) {
+        // the view can differ from what was asked (the pan of the list on iOS)
+        if (this._isScrollEnabled !== value || (this.scrollView && this.scrollView.isScrollEnabled !== value)) {
             this._isScrollEnabled = value;
             if (this.scrollView) {
                 // this only works if the scrollView component supports isScrollEnabled
                 // otherwise the interaction wont be nice
                 this.scrollView.isScrollEnabled = value;
+            }
+        }
+    }
+    /** iOS: the list scrolls only at the full step: below it the touch belongs to the sheet, and the list stays at its top */
+    private updateScrollEnabledIOS(position: number) {
+        if (!__IOS__) {
+            return;
+        }
+        const full = position >= this.translationMaxOffset - 0.5;
+        this.isScrollEnabled = full;
+        const scrollView = this.iosPanScrollView;
+        if (!full && scrollView) {
+            const top = -scrollView.adjustedContentInset.top;
+            if (scrollView.contentOffset.y !== top) {
+                scrollView.contentOffset = CGPointMake(scrollView.contentOffset.x, top);
             }
         }
     }
@@ -507,10 +564,19 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             touchY = location.y;
             touchX = location.x;
         }
-        const p = event.getActivePointers()[0];
+        // the pointer coordinates are relative to the view, which moves with the finger: its velocity would be about 0
+        if (this.cancelSnapTimer) {
+            clearTimeout(this.cancelSnapTimer);
+            this.cancelSnapTimer = null;
+        }
         if (event.action === 'down') {
+            if (this.wasDraggingPanel) {
+                debugWarn('touch down while wasDraggingPanel is still set: the last touch never ended', this.debugState());
+            }
+            debugLog('touch down', this.debugState());
+            this.touchActive = true;
             this.vt = VelocityTracker.obtain();
-            this.vt.addMovement(p.getX(), p.getY());
+            this.vt.addMovement(touchX, touchY);
             this.lastTouchY = null;
             this.touchStartY = touchY;
             this.touchStartX = touchX;
@@ -518,18 +584,36 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             this.wasDraggingPanel = false;
             this.gestureModeDecided = false;
         } else if (event.action === 'up' || event.action === 'cancel') {
-            this.vt?.addMovement(p.getX(), p.getY());
-            // If we were dragging the panel, animate to nearest step
-            // BUT: ignore 'cancel' events from tap handlers (they shouldn't trigger animation)
-            if (this.wasDraggingPanel && event.action === 'up') {
+            this.vt?.addMovement(touchX, touchY);
+            debugLog('touch', event.action, this.debugState());
+            // A 'cancel' mid-drag is sent by tap handlers, and the touch goes on, or by a parent that took it, and it is over:
+            // wait to know which, otherwise the sheet stays where the finger left it
+            if (this.wasDraggingPanel && event.action === 'cancel') {
+                debugWarn('touch cancel while dragging the sheet', this.debugState());
+                this.cancelSnapTimer = setTimeout(() => {
+                    this.cancelSnapTimer = null;
+                    if (this.wasDraggingPanel) {
+                        debugWarn('no touch after a cancel while dragging: snapping', this.debugState());
+                        this.wasDraggingPanel = false;
+                        this.touchActive = false;
+                        this.vt?.recycle();
+                        this.snapToStep('android-touch-cancel', -this.translationY, 0);
+                    }
+                }, 150);
+                return;
+            }
+            this.touchActive = false;
+            // If we were dragging the panel, animate to the step the fling or the position says
+            if (this.wasDraggingPanel) {
                 this.vt?.computeCurrentVelocity(1000);
-                const velocityY = -(this.vt?.getYVelocity() ?? 0);
+                // up when the finger goes up: the touch y goes down
+                const velocityUp = -(this.vt?.getYVelocity() ?? 0);
                 this.vt?.recycle();
                 const y = touchY - (this.lastTouchY || touchY);
-                const totalDelta = this.translationY + y + this.dragToss * velocityY;
-                this.computeAndAnimateEndGestureAnimation(-totalDelta);
+                this.snapToStep('android-touch', -(this.translationY + y), velocityUp);
                 this.wasDraggingPanel = false;
             }
+            this.armRestGuard();
 
             // only reset on bottomsheet up/cancel event (will happen after scrollView up/cancel)
             // because doing it in scrollView could trigger unwanted scroll events breaking things
@@ -550,6 +634,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             // On Android sometimes we don't get the down event but we get move events
             // so initialize touchStartY if needed
             if (this.touchStartY === undefined) {
+                debugLog('touch move without down', this.debugState());
+                this.touchActive = true;
                 this.vt = VelocityTracker.obtain();
                 this.lastTouchY = null;
                 this.touchStartY = touchY;
@@ -558,7 +644,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 this.wasDraggingPanel = false;
                 this.gestureModeDecided = false;
             }
-            this.vt?.addMovement(p.getX(), p.getY());
+            this.vt?.addMovement(touchX, touchY);
 
             const deltaY = touchY - this.touchStartY;
             const absDeltaY = Math.abs(deltaY);
@@ -618,6 +704,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
 
                 if (shouldStartDraggingPanel) {
                     // Switch to panel dragging mode (one-way, won't switch back during this gesture)
+                    debugLog('touch: dragging the sheet from the touch events', this.debugState(), `deltaY=${Math.round(deltaY)}`);
                     this.wasDraggingPanel = true;
                     this.isScrollEnabled = false;
                     this.cancelAllGestures();
@@ -691,6 +778,10 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             pan.previousOffset = scrollView.contentOffset.y + translation;
             pan.sheetMoved = false;
             pan.blocked = this.animating || this.steps.length < 2;
+            debugLog('list pan began', `scrollEnabled=${scrollView.scrollEnabled}`, `offset=${Math.round(scrollView.contentOffset.y)}`, `blocked=${pan.blocked}`, this.debugState());
+            if (!this.isFullyExpanded) {
+                debugWarn('list pan began below the full step: the list should not scroll', this.debugState());
+            }
             return;
         }
         if (state === UIGestureRecognizerState.Changed) {
@@ -733,63 +824,117 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             return;
         }
         if (state === UIGestureRecognizerState.Ended || state === UIGestureRecognizerState.Cancelled || state === UIGestureRecognizerState.Failed) {
+            debugLog('list pan ended', `state=${state}`, `sheetMoved=${pan.sheetMoved}`, this.debugState());
             if (pan.sheetMoved) {
                 pan.sheetMoved = false;
-                const velocity = recognizer.velocityInView(scrollView).y;
-                // the list does not go on with what is left of the finger
-                scrollView.scrollEnabled = false;
-                setTimeout(() => (scrollView.scrollEnabled = true), 0);
-                this.computeAndAnimateEndGestureAnimation(-(this.translationY + this.dragToss * velocity));
+                // the scroll view moves with the finger: its own frame sees the velocity of the finger against itself, the window sees the real one
+                const velocity = recognizer.velocityInView(null).y;
+                debugLog('list pan velocity', `window=${Math.round(velocity)}`, `list=${Math.round(recognizer.velocityInView(scrollView).y)}`);
+                // the list does not go on with what is left of the finger, the end of the animation gives scrolling back at the full step
+                this.isScrollEnabled = false;
+                // finger down: the sheet goes down
+                this.snapToStep('ios-list-pan', -this.translationY, -velocity);
             }
         }
     }
 
     private onGestureState(args: GestureStateEventData) {
-        // Ignore pan gesture handler when we're manually dragging panel via onTouch
+        const { state, prevState, extraData } = args.data;
+        debugLog(
+            'pan handler',
+            `${GestureState[prevState]} -> ${GestureState[state]}`,
+            this.debugState(),
+            `velocityY=${Math.round(extraData?.velocityY)}`,
+            `translationY=${Math.round(extraData?.translationY)}`
+        );
+        this.panHandlerActive = state === GestureState.ACTIVE;
+        // we're manually dragging panel via onTouch: the handler was cancelled, its end is not ours.
+        // But an end is a finger that left, if the touch events never told us the sheet would stay where it is
         if (this.wasDraggingPanel) {
-            return;
+            if (state !== GestureState.END) {
+                return;
+            }
+            debugWarn('pan handler ended while wasDraggingPanel is set: the touch up never came', this.debugState());
+            this.wasDraggingPanel = false;
         }
-
-        const { state, prevState, extraData, view } = args.data;
         if (prevState === GestureState.ACTIVE) {
             const { velocityY, translationY } = extraData;
             const y = translationY - this.prevDeltaY;
-            const totalDelta = this.translationY + (y + this.dragToss * velocityY);
-            this.computeAndAnimateEndGestureAnimation(-totalDelta);
+            // the velocity of the handler is in the window: down is positive
+            this.snapToStep('pan-handler', -(this.translationY + y), -velocityY);
+        }
+        // a stale delta would make the next drag jump
+        if (state !== GestureState.ACTIVE) {
             this.prevDeltaY = 0;
         }
     }
 
-    canAnimateToStep(step: number) {
+    /** Setting `enabled` cancels the handler while the finger drags with it: only when it changes */
+    private setPanHandlerEnabled(value: boolean) {
+        if (this.panGestureHandler && this.panHandlerEnabled !== value) {
+            this.panHandlerEnabled = value;
+            this.panGestureHandler.enabled = value;
+        }
+    }
+
+    /** a step can be refused to the gestures. `index` is the index of the step */
+    canAnimateToStep(index: number) {
         return true;
     }
 
-    private computeAndAnimateEndGestureAnimation(totalDelta: number) {
+    private debugState() {
+        return `[position=${Math.round(-this.translationY)} stepIndex=${this.stepIndex} animating=${this.animating} dragging=${this.wasDraggingPanel} touch=${this.touchActive} pan=${this.panHandlerActive}]`;
+    }
+
+    /** The sheet is released at `position` (dp) with `velocityUp` (dp/s, positive when it goes up) */
+    private snapToStep(source: string, position: number, velocityUp: number) {
         const steps = this.steps;
-        let stepIndex = 0;
-        for (let i = 0; i < steps.length; i++) {
-            if (!this.canAnimateToStep(i)) {
-                stepIndex++;
-            } else {
-                break;
-            }
-        }
-        let destSnapPoint = steps[stepIndex];
-        let distance = Math.abs(destSnapPoint - totalDelta);
-        for (let i = stepIndex; i < steps.length; i++) {
-            const snapPoint = steps[i];
-            if (!this.canAnimateToStep(snapPoint)) {
-                continue;
-            }
-            const distFromSnap = Math.abs(snapPoint - totalDelta);
-            if (distFromSnap <= Math.abs(destSnapPoint - totalDelta)) {
-                destSnapPoint = snapPoint;
-                stepIndex = i;
-                distance = distFromSnap;
-            }
-        }
+        const clamped = Math.max(0, Math.min(position, this.translationMaxOffset));
+        const stepIndex = computeSnapIndex({
+            steps,
+            canSnapTo: (index) => this.canAnimateToStep(index),
+            position: clamped,
+            velocity: velocityUp,
+            flingVelocity: this.flingVelocity,
+            projection: this.dragToss
+        });
+        const destSnapPoint = steps[stepIndex];
+        const duration = Math.min(Math.abs(destSnapPoint - clamped) * 2, OPEN_DURATION);
+        debugLog(
+            'snap',
+            source,
+            `position=${Math.round(position)}`,
+            `velocityUp=${Math.round(velocityUp)}`,
+            `fling=${this.flingVelocity}`,
+            `toss=${this.dragToss}`,
+            `-> step ${stepIndex} (${destSnapPoint})`,
+            `duration=${Math.round(duration)}`
+        );
         stepIndexProperty.nativeValueChange(this, stepIndex);
-        this.animateToPosition(destSnapPoint, Math.min(distance * 2, OPEN_DURATION));
+        this.animateToPosition(destSnapPoint, duration);
+    }
+
+    /**
+     * Android: the sheet must not stay between 2 steps. Some touch sequences never end for us (a child took the touch, a handler cancelled it):
+     * once nothing touches or animates the sheet, it goes to the nearest step.
+     */
+    private armRestGuard() {
+        if (!__ANDROID__) {
+            return;
+        }
+        clearTimeout(this.restGuardTimer);
+        this.restGuardTimer = setTimeout(() => {
+            this.restGuardTimer = null;
+            if (this.touchActive || this.panHandlerActive || this.animating || this.wasDraggingPanel || !this.steps?.length) {
+                return;
+            }
+            const position = -this.translationY;
+            if (this.steps.some((step) => Math.abs(step - position) < 1)) {
+                return;
+            }
+            debugWarn('the sheet rests between 2 steps: snapping to the nearest', this.debugState());
+            this.snapToStep('rest-guard', position, 0);
+        }, 150);
     }
 
     public animateStepIndex(stepIndex, duration?: number, curve?) {
@@ -840,17 +985,22 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     animating = false;
     private async animateToPosition(position, duration = OPEN_DURATION, curve = CoreTypes.AnimationCurve.easeOut) {
         if (this.animation) {
+            debugWarn('animateToPosition: cancelling the running animation', `to=${position}`, this.debugState());
             this.animation.cancel();
             // on iOS cancel() never settles play(), so the cancelled call never reaches its finally block
             this.animation = null;
-            this.animating = false;
         }
-        if (this.animating) {
-            return;
-        }
+        // nothing runs behind `animating` once the animation is gone: never let it block the sheet
+        this.animating = false;
+        const runId = ++this.animationRun;
+        debugLog('animate', `to=${position}`, `duration=${Math.round(duration)}`, this.debugState());
         this.notify({ eventName: 'animate', position, duration });
 
         this.animating = true;
+        // iOS: below the full step the list does not scroll, the touch is for the sheet
+        if (__IOS__ && position < this.translationMaxOffset - 0.5) {
+            this.isScrollEnabled = false;
+        }
         if (this._scrollView && __ANDROID__) {
             // on android we get unwanted scroll effect while "swipping the view"
             // cancel the views touches before animation to prevent that
@@ -885,16 +1035,27 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 }
             })
             .filter((a) => !!a);
+        if (debugEnabled) {
+            debugLog('animation params', JSON.stringify((params as Record<string, any>[]).map(({ target, ...others }) => ({ target: target?.constructor?.name, ...others }))));
+        }
         let animation: Animation = null;
+        let watchdog: ReturnType<typeof setTimeout>;
         try {
             animation = new Animation(params);
             this.animation = animation;
+            if (debugEnabled) {
+                watchdog = setTimeout(() => debugWarn('animation not settled long after its duration', `to=${position}`, this.debugState()), duration + 500);
+            }
             await animation.play();
         } catch (err) {
             console.error('BottomSheet animation cancelled', err);
         } finally {
+            clearTimeout(watchdog);
             // otherwise a newer call has taken over
-            if (this.animation === animation) {
+            if (this.animationRun === runId) {
+                // first: what runs below can start a new animation (the pan handler is cancelled when it is enabled again)
+                this.animation = null;
+                this.animating = false;
                 // a cancelled animation can still write its own target when its CAAnimation starts,
                 // and a hidden layer (app in background) never starts one: commit the end position
                 this.applyTrData(trData);
@@ -904,10 +1065,13 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                     // sheet moved, views where it no longer is would stay cut off without one.
                     this.nativeViewProtected?.requestLayout();
                 }
-                this.isScrollEnabled = true;
-                this.animating = false;
-                this.panGestureHandler.enabled = this.stepIndex !== 0;
-                this.animation = null;
+                if (__IOS__) {
+                    this.updateScrollEnabledIOS(position);
+                } else {
+                    this.isScrollEnabled = true;
+                }
+                debugLog('animated', `to=${position}`, this.debugState());
+                this.setPanHandlerEnabled(this.stepIndex !== 0);
                 this.notify({ eventName: 'animated', position, duration });
             }
         }
