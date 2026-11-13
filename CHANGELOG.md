@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.16](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.15...v0.1.16) (2026-11-13)
+
+### Bug Fixes
+
+* snap on the fling direction, scroll the list only at the full step, unstick android ([2b2906e](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/2b2906e3a665e4c9ece3ddac4fd0a08b80430bc6))
+
 ## [0.1.15](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.14...v0.1.15) (2026-11-11)
 
 ### Bug Fixes
