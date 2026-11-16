@@ -1071,7 +1071,8 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                     this.isScrollEnabled = true;
                 }
                 debugLog('animated', `to=${position}`, this.debugState());
-                this.setPanHandlerEnabled(this.stepIndex !== 0);
+                // only a closed step (0) takes no gesture: a first step above 0 is a peek which can be dragged up
+                this.setPanHandlerEnabled(!(this.stepIndex === 0 && this.steps[0] === 0));
                 this.notify({ eventName: 'animated', position, duration });
             }
         }
