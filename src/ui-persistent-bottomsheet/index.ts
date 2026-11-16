@@ -115,6 +115,8 @@ export const translationFunctionProperty = new Property<PersistentBottomSheet, F
 export class PersistentBottomSheet extends AbsoluteLayout {
     public bottomSheet: View;
     public scrollViewId: string;
+    /** iOS: the list scrolls at every step (by default only at the full one, below it the finger moves the sheet). Dragged down at its top, it still moves the sheet down */
+    public scrollAtAnyStep = false;
     // isPanning = false;
     public backdropColor = null;
 
@@ -241,7 +243,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         if (this._scrollView) {
             const posY = this._scrollView && this.scrollView.getLocationRelativeTo(this).y + deltaY;
             // iOS: the list only scrolls at the full step, below it the touch belongs to the sheet
-            if (y >= posY && y <= posY + this.scrollView.getMeasuredHeight() && !(__IOS__ && !this.isFullyExpanded)) {
+            if (y >= posY && y <= posY + this.scrollView.getMeasuredHeight() && !(__IOS__ && !this.isFullyExpanded && !this.scrollAtAnyStep)) {
                 return false;
             }
         }
@@ -525,7 +527,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         if (!__IOS__) {
             return;
         }
-        const full = position >= this.translationMaxOffset - 0.5;
+        const full = this.scrollAtAnyStep || position >= this.translationMaxOffset - 0.5;
         this.isScrollEnabled = full;
         const scrollView = this.iosPanScrollView;
         if (!full && scrollView) {
@@ -779,7 +781,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             pan.sheetMoved = false;
             pan.blocked = this.animating || this.steps.length < 2;
             debugLog('list pan began', `scrollEnabled=${scrollView.scrollEnabled}`, `offset=${Math.round(scrollView.contentOffset.y)}`, `blocked=${pan.blocked}`, this.debugState());
-            if (!this.isFullyExpanded) {
+            if (!this.isFullyExpanded && !this.scrollAtAnyStep) {
                 debugWarn('list pan began below the full step: the list should not scroll', this.debugState());
             }
             return;
@@ -799,7 +801,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             let newOffset: number = null;
             if (dy < 0) {
                 // finger up: the sheet rises while the list is at its top, what it cannot rise is for the list
-                if (offset <= top + 0.5) {
+                if (offset <= top + 0.5 && !this.scrollAtAnyStep) {
                     sheetMove = Math.min(-dy, this.translationMaxOffset - position);
                     newOffset = top + (-dy - sheetMove);
                 }
