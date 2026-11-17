@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.17](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.16...v0.1.17) (2026-11-17)
+
+### Features
+
+* add scrollAtAnyStep to scroll the list below the full step on iOS ([e6ea616](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/e6ea616c03e06ebfa63ef567047734ffd8565170))
+
+### Bug Fixes
+
+* keep the pan gesture on a first step above 0 ([83eb01f](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/83eb01f1a3270cd5b6918455830c42ba232521f5))
+
 ## [0.1.16](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.15...v0.1.16) (2026-11-13)
 
 ### Bug Fixes
