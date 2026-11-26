@@ -559,6 +559,10 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         }
         this.onTouch(event, true);
     }
+    /** The finger starts to drag the sheet: `dragStart` lets the content let go of what it holds (the focus of a text, a selection) */
+    private notifyDragStart() {
+        this.notify({ eventName: 'dragStart' });
+    }
     vt: VelocityTracker | null = null;
     private onTouch(event: TouchGestureEventData, fromScrollView = false) {
         let touchY;
@@ -721,6 +725,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                     this.wasDraggingPanel = true;
                     this.isScrollEnabled = false;
                     this.cancelAllGestures();
+                    this.notifyDragStart();
                 } else {
                     // Keep scrolling the list
                     if (!this.gestureModeDecided && !isAtTop) {
@@ -861,6 +866,9 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             `translationY=${Math.round(extraData?.translationY)}`
         );
         this.panHandlerActive = state === GestureState.ACTIVE;
+        if (state === GestureState.ACTIVE && prevState !== GestureState.ACTIVE) {
+            this.notifyDragStart();
+        }
         // we're manually dragging panel via onTouch: the handler was cancelled, its end is not ours.
         // But an end is a finger that left, if the touch events never told us the sheet would stay where it is
         if (this.wasDraggingPanel) {
