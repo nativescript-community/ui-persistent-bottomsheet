@@ -1,0 +1,8 @@
+{
+    "extends": "../../tools/tsconfig.svelte5.json",
+    "compilerOptions": {
+        "rootDir": "../../src/ui-persistent-bottomsheet",
+        "outDir": "./"
+    },
+    "include": ["../../src/ui-persistent-bottomsheet/*.ts", "../../src/ui-persistent-bottomsheet/svelte5/**/*", "../../references.d.ts", "../../tools/references.d.ts", "../../src/references.d.ts"]
+}
