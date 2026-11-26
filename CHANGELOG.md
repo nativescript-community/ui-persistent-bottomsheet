@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.18](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.17...v0.1.18) (2026-11-26)
+
+### Features
+
+* add a dragStart event ([b4b5cf2](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/b4b5cf2052e23f6bd834e87799e16df02dbb9337))
+
+### Bug Fixes
+
+* start a drag after the touch slop and sync the step index of a drag by hand ([888eb60](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/888eb60b1c7aa3855b287ab51b30f1a9df440353))
+* use the min distance of the pan handler for the touch path ([867f7e0](https://github.com/nativescript-community/ui-persistent-bottomsheet/commit/867f7e039113db560b54bfda60731f809972b8b8))
+
 ## [0.1.17](https://github.com/nativescript-community/ui-persistent-bottomsheet/compare/v0.1.16...v0.1.17) (2026-11-17)
 
 ### Features
