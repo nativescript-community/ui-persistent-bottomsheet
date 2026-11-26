@@ -9,5 +9,6 @@
         }
     },
     "include": ["../../src/ui-persistent-bottomsheet/**/*", "../../references.d.ts", "../../tools/references.d.ts", "../../src/references.d.ts"],
-    "exclude": ["../../src/ui-persistent-bottomsheet/svelte5/**/*", "../../src/ui-persistent-bottomsheet/angular/**"]
+    "exclude": ["../../src/ui-persistent-bottomsheet/svelte5/**/*", "../../src/ui-persistent-bottomsheet/angular/**"],
+    "references": [{ "path": "./tsconfig.svelte5.json" }]
 }
