@@ -31,6 +31,10 @@ import { DEFAULT_FLING_VELOCITY, computeSnapIndex } from './snap';
 const OPEN_DURATION = 200;
 export let PAN_GESTURE_TAG = 12400;
 const SWIPE_DISTANCE_MINIMUM = 10;
+/** dp: the scroll view starts to scroll after the touch slop (8dp), the sheet has to decide before */
+const SCROLL_VIEW_DRAG_SLOP = 3;
+/** ms: after it the view of the touch is selecting its text, the drag is not for the sheet */
+const LONG_PRESS_TIMEOUT = 400;
 
 let debugEnabled = false;
 /** Logs `[PBS]` lines to reproduce gesture issues: what the finger did, what the sheet decided */
@@ -135,6 +139,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     private lastTouchY: number;
     private touchStartY: number;
     private touchStartX: number;
+    private touchDownTime = 0;
     /** the touch went sideways, so it belongs to whatever is under the finger, not to the sheet */
     private touchIsHorizontal = false;
     private wasDraggingPanel = false;
@@ -496,7 +501,10 @@ export class PersistentBottomSheet extends AbsoluteLayout {
     }
     private get scrollViewVerticalOffset() {
         if (__ANDROID__) {
-            return (this.scrollView.nativeViewProtected as androidx.core.view.ScrollingView).computeVerticalScrollOffset() / Utils.layout.getDisplayDensity();
+            // a text view is wrapped: the scrolling view is its inner one
+            const { nativeTextViewProtected } = this.scrollView as ScrollView & { nativeTextViewProtected?: android.view.View };
+            const scrollingView = nativeTextViewProtected ?? this.scrollView.nativeViewProtected;
+            return (scrollingView as androidx.core.view.ScrollingView).computeVerticalScrollOffset() / Utils.layout.getDisplayDensity();
         } else {
             return (this.scrollView.nativeViewProtected as UIScrollView).contentOffset.y;
         }
@@ -549,10 +557,14 @@ export class PersistentBottomSheet extends AbsoluteLayout {
         } else {
             this.scrollViewTouched = true;
         }
-        this.onTouch(event);
+        this.onTouch(event, true);
+    }
+    /** The finger starts to drag the sheet: `dragStart` lets the content let go of what it holds (the focus of a text, a selection) */
+    private notifyDragStart() {
+        this.notify({ eventName: 'dragStart' });
     }
     vt: VelocityTracker | null = null;
-    private onTouch(event: TouchGestureEventData) {
+    private onTouch(event: TouchGestureEventData, fromScrollView = false) {
         let touchY;
         let touchX;
         // touch event gives you relative touch which varies with translateY
@@ -582,6 +594,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             this.lastTouchY = null;
             this.touchStartY = touchY;
             this.touchStartX = touchX;
+            this.touchDownTime = Date.now();
             this.touchIsHorizontal = false;
             this.wasDraggingPanel = false;
             this.gestureModeDecided = false;
@@ -642,6 +655,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 this.lastTouchY = null;
                 this.touchStartY = touchY;
                 this.touchStartX = touchX;
+                this.touchDownTime = Date.now();
                 this.touchIsHorizontal = false;
                 this.wasDraggingPanel = false;
                 this.gestureModeDecided = false;
@@ -676,13 +690,14 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 }
             }
 
-            // we cant have small movement ignore
-            // otherwise the scrollview would slowly start moving
-            // then after it would peek a scrollview wanting to scroll
-            // if (absDeltaY < SWIPE_DISTANCE_MINIMUM) {
-            //     // Movement too small - likely a tap
-            //     return;
-            // }
+            if (!this.wasDraggingPanel) {
+                // a tap moves a few pixels: only a real drag takes the touch from the children, a button would lose its tap
+                const slop = fromScrollView ? SCROLL_VIEW_DRAG_SLOP : (this.panGestureOptions?.minDist ?? SWIPE_DISTANCE_MINIMUM);
+                if (absDeltaY < slop || (fromScrollView && Date.now() - this.touchDownTime > LONG_PRESS_TIMEOUT)) {
+                    this.lastTouchY = touchY;
+                    return;
+                }
+            }
 
             // Check current scroll position
             const currentScrollY = this._scrollView ? this.scrollViewVerticalOffset : 0;
@@ -710,6 +725,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                     this.wasDraggingPanel = true;
                     this.isScrollEnabled = false;
                     this.cancelAllGestures();
+                    this.notifyDragStart();
                 } else {
                     // Keep scrolling the list
                     if (!this.gestureModeDecided && !isAtTop) {
@@ -850,6 +866,9 @@ export class PersistentBottomSheet extends AbsoluteLayout {
             `translationY=${Math.round(extraData?.translationY)}`
         );
         this.panHandlerActive = state === GestureState.ACTIVE;
+        if (state === GestureState.ACTIVE && prevState !== GestureState.ACTIVE) {
+            this.notifyDragStart();
+        }
         // we're manually dragging panel via onTouch: the handler was cancelled, its end is not ours.
         // But an end is a finger that left, if the touch events never told us the sheet would stay where it is
         if (this.wasDraggingPanel) {
@@ -931,7 +950,12 @@ export class PersistentBottomSheet extends AbsoluteLayout {
                 return;
             }
             const position = -this.translationY;
-            if (this.steps.some((step) => Math.abs(step - position) < 1)) {
+            const restIndex = this.steps.findIndex((step) => Math.abs(step - position) < 1);
+            if (restIndex !== -1) {
+                // a drag by hand to a step (the full one) ends without a snap: its index is still the one of the step the drag started from
+                if (restIndex !== this.stepIndex) {
+                    stepIndexProperty.nativeValueChange(this, restIndex);
+                }
                 return;
             }
             debugWarn('the sheet rests between 2 steps: snapping to the nearest', this.debugState());
