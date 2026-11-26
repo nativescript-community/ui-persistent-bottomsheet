@@ -688,7 +688,7 @@ export class PersistentBottomSheet extends AbsoluteLayout {
 
             if (!this.wasDraggingPanel) {
                 // a tap moves a few pixels: only a real drag takes the touch from the children, a button would lose its tap
-                const slop = fromScrollView ? SCROLL_VIEW_DRAG_SLOP : SWIPE_DISTANCE_MINIMUM;
+                const slop = fromScrollView ? SCROLL_VIEW_DRAG_SLOP : (this.panGestureOptions?.minDist ?? SWIPE_DISTANCE_MINIMUM);
                 if (absDeltaY < slop || (fromScrollView && Date.now() - this.touchDownTime > LONG_PRESS_TIMEOUT)) {
                     this.lastTouchY = touchY;
                     return;
