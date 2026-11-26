@@ -273,15 +273,6 @@ Then in your component, add the following:
 ```
 For a more complete example, look in the `demo-svelte` directory.
 
-### Svelte 5
-
-With `@nativescript-community/svelte-native` >= 5 (Svelte 5), import the binding from `svelte5` instead, the markup is the same:
-
-```typescript
-import BottomSheetElement from '@nativescript-community/ui-persistent-bottomsheet/svelte5';
-BottomSheetElement.register();
-```
-
 
 [](#usage-in-react)
 
